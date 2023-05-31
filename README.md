@@ -1,4 +1,4 @@
-# Microservice Cache / Kafka Template
+# Microservice WebFlux / R2DBC Template
 
 --------------------------------------------------------------------------------------------------
 WARNING:
@@ -34,7 +34,7 @@ Checkout the respective branches for the Microservices template
 
 1. SpringBoot 3.1
 2. Java 17 
-3. Jakarta EE (jakarta.servlet.*, jakarta.persistence.*, jakarta.validation.*)
+3. Jakarta EE 10 (jakarta.servlet.*, jakarta.persistence.*, jakarta.validation.*)
 4. Maven 3.8.6
 5. Git 2.31
 

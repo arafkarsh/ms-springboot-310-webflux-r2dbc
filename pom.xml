@@ -7,7 +7,7 @@
 	<version>0.7.1</version>
 	<packaging>jar</packaging>
 	<name>msCacheService</name>
-	<description>Microservice Cache Kafka Template</description>
+	<description>Microservice WebFlux Template</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
