@@ -16,10 +16,9 @@
 package io.fusion.air.microservice.domain.entities.core;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 
-import jakarta.persistence.*;
 import java.util.UUID;
 
 /**
@@ -27,12 +26,10 @@ import java.util.UUID;
  * @version:
  * @date:
  */
-@MappedSuperclass
 public class AbstractBaseEntityWithUUID extends AbstractBaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "uuid", unique = true)
+    @Column("uuid")
     // @Size(min = 36, max = 36, message = "The length of UUID Name must be 36 characters.")
     // @Pattern(regexp = "^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}$", message = "Invalid UUID")
     private UUID uuid;

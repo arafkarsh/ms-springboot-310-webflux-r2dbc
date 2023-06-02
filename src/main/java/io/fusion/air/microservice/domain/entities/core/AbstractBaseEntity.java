@@ -16,34 +16,28 @@
 package io.fusion.air.microservice.domain.entities.core;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.relational.core.mapping.Column;
 
-import jakarta.persistence.*;
-import java.sql.Timestamp;
-import java.util.Date;
 
 /**
  * @author: Araf Karsh Hamid
  * @version:
  * @date:
  */
-@MappedSuperclass
 public class AbstractBaseEntity {
 
-    @Column(name = "isActive")
+    @Column("isActive")
     private boolean isActive;
 
-    @Version
-    @Column(name = "version")
+    @Column("version")
     private int version;
 
-    @Embedded
     private AuditLog auditLog = new AuditLog();
 
     /**
      * Init Audit Log
      */
     @JsonIgnore
-    @PrePersist()
     public void initAudit() {
         this.isActive = true;
         this.auditLog.initAudit();
@@ -53,7 +47,6 @@ public class AbstractBaseEntity {
      * Set the Updated By User and Updated By Time (Current Time)
      */
     @JsonIgnore
-    @PreUpdate()
     public void setUpdatedBy() {
         this.auditLog.setUpdatedBy();
     }

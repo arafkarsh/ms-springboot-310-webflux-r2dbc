@@ -26,8 +26,7 @@ import org.slf4j.MDC;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import jakarta.persistence.*;
-
+import org.springframework.data.relational.core.mapping.Column;
 
 /**
  * Record Audit Log - Keeps track of the following fields for all the records. 
@@ -42,7 +41,6 @@ import jakarta.persistence.*;
  * @date
  */
 
-@Embeddable
 public class AuditLog  {
 
     private static final long serialVersionUID = 1L;
@@ -52,7 +50,7 @@ public class AuditLog  {
      * Record Audit log will always have the original data.
      * Record Created By User 
      */
-    @Column(name = "createdBy", updatable=false, nullable = false)
+    @Column("createdBy")
     private String createdBy;
 
     /**
@@ -60,19 +58,19 @@ public class AuditLog  {
      * Record Audit log will always have the original data.
      * Record Created Time
      */
-    @Column(name = "createdTime", updatable=false, nullable = false)
+    @Column("createdTime")
     private java.sql.Timestamp createdTime;
 
     /**
      * Set the updated by user.
      */
-    @Column(name = "updatedBy", nullable = false)
+    @Column("updatedBy")
     private String updatedBy;
 
     /**
      * Set the Updated By Time by the user.
      */
-    @Column(name = "updatedTime", nullable = false)
+    @Column("updatedTime")
     private java.sql.Timestamp updatedTime;
 
     /**
@@ -85,7 +83,6 @@ public class AuditLog  {
      * Init Audit Log At the time of Record Insert
      */
     @JsonIgnore
-    // @PrePersist()
     public void initAudit() {
         createdTime 	= new Timestamp(new Date().getTime());
         createdBy       = MDC.get("user") == null ? "Admin" : MDC.get("user");
@@ -96,7 +93,6 @@ public class AuditLog  {
      * Set the Updated By from the Session User
      */
     @JsonIgnore
-    // @PreUpdate()
     public void setUpdatedBy() {
         updatedTime	= new Timestamp(new Date().getTime());
         updatedBy	= MDC.get("user") == null ? "User" : MDC.get("user");

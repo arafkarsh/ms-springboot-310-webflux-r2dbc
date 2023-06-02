@@ -15,21 +15,12 @@
  */
 package io.fusion.air.microservice.server.config;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 // REACTIVE IMPORTS
@@ -42,10 +33,6 @@ import static io.r2dbc.spi.ConnectionFactoryOptions.*;
 import org.springframework.r2dbc.connection.R2dbcTransactionManager;
 import org.springframework.transaction.ReactiveTransactionManager;
 
-
-import jakarta.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-
 /**
  * @author: Araf Karsh Hamid
  * @version:
@@ -54,12 +41,6 @@ import javax.sql.DataSource;
 @Configuration
 // Data Models
 @EntityScan("io.fusion.air.microservice.domain.*")
-// JPA Repositories
-@EnableJpaRepositories(basePackages = {
-        "io.fusion.air.microservice.domain.ports",
-        "io.fusion.air.microservice.adapters.repository"
-
-})
 @EnableTransactionManagement
 public class DatabaseConfig {
 
@@ -67,92 +48,61 @@ public class DatabaseConfig {
     private ServiceConfiguration serviceConfig;
 
     // =================================================================================================================
-    // JDBC / JPA Database
-    // =================================================================================================================
-    /**
-     * Create the DataSource for H2 Database
-     * @return
-     */
-    @Bean
-    public DataSource dataSource() {
-        switch(serviceConfig.getDataSourceVendor()) {
-            case ServiceConfiguration.DB_H2:
-                // For H2 Database
-                EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-                return builder.setType(EmbeddedDatabaseType.H2).build();
-            case ServiceConfiguration.DB_POSTGRESQL:
-                // For PostgreSQL Database
-                HikariConfig config = new HikariConfig();
-
-                config.setDataSourceClassName(serviceConfig.getDataSourceDriverClassName());
-                config.addDataSourceProperty("serverName", serviceConfig.getDataSourceServer());
-                config.addDataSourceProperty("portNumber", ""+serviceConfig.getDataSourcePort());
-                config.addDataSourceProperty("databaseName", serviceConfig.getDataSourceName());
-                config.addDataSourceProperty("user", serviceConfig.getDataSourceUserName());
-                config.addDataSourceProperty("password", serviceConfig.getDataSourcePassword());
-                config.setSchema(serviceConfig.getDataSourceSchema());
-
-                // postgress configuration for Hikari
-                return new HikariDataSource(config);
-        }
-        // Returns H2 Database if Nothing Matches
-        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-        return builder.setType(EmbeddedDatabaseType.H2).build();
-    }
-
-    /**
-     * Create EntityManagerFactory
-     * @return
-     */
-    @Bean
-    public EntityManagerFactory entityManagerFactory() {
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        vendorAdapter.setGenerateDdl(true);
-        // vendorAdapter.setDatabasePlatform("org.hibernate.dialect.PostgreSQLDialect");
-        vendorAdapter.setDatabasePlatform(serviceConfig.getDataSourceDialect());
-
-        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-        factory.setJpaVendorAdapter(vendorAdapter);
-        String[] pkgs = {"io.fusion.air.microservice.domain.*"};
-        factory.setPackagesToScan(pkgs);
-        // Set Database Source
-        factory.setDataSource(dataSource());
-        factory.afterPropertiesSet();
-
-        return factory.getObject();
-    }
-
-    /**
-     * Create PlatformTransactionManager
-     * @return
-     */
-    @Bean
-    @Qualifier("transactionManager")
-    public PlatformTransactionManager transactionManager() {
-        JpaTransactionManager txManager = new JpaTransactionManager();
-        txManager.setEntityManagerFactory(entityManagerFactory());
-        return txManager;
-    }
-
-    // =================================================================================================================
     // REACTIVE Database
     // =================================================================================================================
     @Bean
     public ConnectionFactory connectionFactory() {
-        return ConnectionFactories.get(ConnectionFactoryOptions.builder()
-                .option(DRIVER, "postgresql")
-                .option(HOST, "localhost")
-                .option(PORT, 5433)
-                .option(USER, "postgresql")
-                .option(PASSWORD, "")
-                .option(DATABASE, "ms-cache")
-                .build());
+        switch(serviceConfig.getDataSourceVendor()) {
+            case ServiceConfiguration.DB_H2:
+                // For H2 Database
+                return getH2ConnectionFactory();
+            case ServiceConfiguration.DB_POSTGRESQL:
+                // For PostgreSQL Database
+                return getPostgreSQLConnectionFactory();
+        }
+        // Default H2 Database
+        return getH2ConnectionFactory();
     }
 
+    /**
+     * Returns the Reactive Transaction Manager
+     * @param connectionFactory
+     * @return
+     */
     @Bean
     @Qualifier("reactiveTransactionManager")
     public ReactiveTransactionManager reactiveTransactionManager(ConnectionFactory connectionFactory) {
         return new R2dbcTransactionManager(connectionFactory);
+    }
+
+
+    /**
+     * Create H2 Connection Factory
+     * @return
+     */
+    private ConnectionFactory getH2ConnectionFactory() {
+        return ConnectionFactories.get(ConnectionFactoryOptions.builder()
+                .option(DRIVER, "h2")
+                .option(PROTOCOL, "mem")
+                .option(DATABASE, "ms-cache")
+                .option(USER, "sa")
+                .option(PASSWORD, "")
+                .build());
+    }
+
+    /**
+     * Create PostgreSQL Connection Factory
+     * @return
+     */
+    private ConnectionFactory getPostgreSQLConnectionFactory() {
+        return ConnectionFactories.get(ConnectionFactoryOptions.builder()
+                .option(DRIVER, "postgresql")
+                .option(HOST, "localhost")
+                .option(PORT, 5433)
+                .option(USER, "postgres")
+                .option(PASSWORD, "")
+                .option(DATABASE, "ms-cache")
+                .build());
     }
 
 }

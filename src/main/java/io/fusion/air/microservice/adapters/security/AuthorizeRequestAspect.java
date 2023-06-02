@@ -31,10 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import jakarta.servlet.http.HttpServletRequest;
 
 import static java.lang.invoke.MethodHandles.lookup;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -159,6 +156,7 @@ public class AuthorizeRequestAspect {
      */
     private Object validateRequest(boolean singleToken, String tokenKey, ProceedingJoinPoint joinPoint, int tokenCtg)
             throws Throwable {
+        /**
         // Get the request object
         long startTime = System.currentTimeMillis();
         ServletRequestAttributes attributes = (ServletRequestAttributes)
@@ -190,6 +188,7 @@ public class AuthorizeRequestAspect {
         if(!singleToken ) {
             validateAndSetClaimsFromTxToken(startTime, user, tokenKey, request.getHeader(TX_TOKEN), joinPoint);
         }
+         */
         return joinPoint.proceed();
     }
 

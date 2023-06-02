@@ -15,14 +15,11 @@
  */
 package io.fusion.air.microservice.server.controllers;
 
-import jakarta.servlet.http.HttpServletRequest;
 
 import io.fusion.air.microservice.adapters.security.AuthorizationRequired;
-import io.fusion.air.microservice.domain.exceptions.InputDataException;
 import io.fusion.air.microservice.domain.models.core.StandardResponse;
 import io.fusion.air.microservice.server.config.ServiceConfiguration;
 import io.fusion.air.microservice.server.config.ServiceHelp;
-import io.fusion.air.microservice.server.models.EchoResponseData;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -31,7 +28,6 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,9 +47,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
 
 /**
  * Health Controller for the Service
@@ -103,7 +97,7 @@ public class HealthController extends AbstractController {
     })
 	@GetMapping("/live")
 	@ResponseBody
-	public ResponseEntity<StandardResponse> getHealth(HttpServletRequest request) throws Exception {
+	public ResponseEntity<StandardResponse> getHealth() throws Exception {
 		log.debug(name()+"|Request to Health of Service... ");
 		StandardResponse stdResponse = createSuccessResponse("Service is OK!");
 		return ResponseEntity.ok(stdResponse);
@@ -120,7 +114,7 @@ public class HealthController extends AbstractController {
     })
 	@GetMapping("/ready")
 	@ResponseBody
-	public ResponseEntity<StandardResponse> isReady(HttpServletRequest request) throws Exception {
+	public ResponseEntity<StandardResponse> isReady() throws Exception {
 		log.debug(name()+"|Request to Ready Check.. ");
 		StandardResponse stdResponse = createSuccessResponse("Service is Ready!");
 		return ResponseEntity.ok(stdResponse);
@@ -162,14 +156,13 @@ public class HealthController extends AbstractController {
 		log.info(name()+"|Server Restart Request Received ....");
 		if(serviceConfig != null && serviceConfig.isServerRestart()) {
     		log.info(name()+"|Restarting the service........");
-    		ServiceBootStrap.restart();
+    		// ServiceBootStrap.restart();
     	}
     }
     
 	/**
 	 * Basic Testing
 	 * 
-	 * @param request
 	 * @return
 	 */
 	@AuthorizationRequired(role = "User")
@@ -184,12 +177,11 @@ public class HealthController extends AbstractController {
     })
 	@GetMapping("/home")
 	@ResponseBody
-	public String apiHome(HttpServletRequest request) {
+	public String apiHome() {
 		log.info("|Request to /home/ path... ");
 		StringBuilder sb = new StringBuilder();
 		sb.append(title);
 		sb.append("<br>");
-		sb.append(printRequestURI(request));
 		return sb.toString();
 	}
  }

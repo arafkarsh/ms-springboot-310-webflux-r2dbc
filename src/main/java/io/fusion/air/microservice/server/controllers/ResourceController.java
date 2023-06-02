@@ -32,10 +32,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.annotation.RequestScope;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
-
 import static java.lang.invoke.MethodHandles.lookup;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -76,8 +72,7 @@ public class ResourceController extends AbstractController {
 					content = @Content)
 	})
 	@GetMapping(value = "/images/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
-	public ResponseEntity<InputStreamResource> getImageFiles(HttpServletRequest request, HttpServletResponse response,
-											@PathVariable("imageName") String imageName) throws Exception {
+	public ResponseEntity<InputStreamResource> getImageFiles(@PathVariable("imageName") String imageName) throws Exception {
 		try {
 			ClassPathResource imageFile = new ClassPathResource("static/images/" + imageName);
 			return ResponseEntity
@@ -105,8 +100,7 @@ public class ResourceController extends AbstractController {
 					content = @Content)
 	})
 	@GetMapping(value = "/video/{videoName}", produces = MediaType.ALL_VALUE)
-	public ResponseEntity<InputStreamResource> getVideoFiles(HttpServletRequest request, HttpServletResponse response,
-															@PathVariable("videoName") String videoName) throws Exception {
+	public ResponseEntity<InputStreamResource> getVideoFiles(@PathVariable("videoName") String videoName) throws Exception {
 		try {
 			ClassPathResource videoFile = new ClassPathResource("static/videos/" + videoName);
 			return ResponseEntity
@@ -134,8 +128,7 @@ public class ResourceController extends AbstractController {
 					content = @Content)
 	})
 	@GetMapping(value = "/files/{fileName}", produces = MediaType.TEXT_HTML_VALUE)
-	public ResponseEntity<InputStreamResource> getHtmlFiles(HttpServletRequest request, HttpServletResponse response,
-										@PathVariable("fileName") String fileName) throws Exception {
+	public ResponseEntity<InputStreamResource> getHtmlFiles(@PathVariable("fileName") String fileName) throws Exception {
 		try {
 			ClassPathResource htmlFile = new ClassPathResource("static/files/" + fileName);
 			return ResponseEntity

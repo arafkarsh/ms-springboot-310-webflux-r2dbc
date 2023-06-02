@@ -18,9 +18,6 @@ package io.fusion.air.microservice.domain.entities.example;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.fusion.air.microservice.domain.entities.core.AbstractBaseEntityWithUUID;
 import io.fusion.air.microservice.domain.models.example.CartItem;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -29,41 +26,42 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+
 /**
  * @author: Araf Karsh Hamid
  * @version:
  * @date:
  */
 
-@Entity
-@Table(name = "carts_tx")
+@Table("carts_tx")
 public class CartItemEntity extends AbstractBaseEntityWithUUID {
 
     @NotNull(message = "The Customer ID is  required.")
     // @Size(min = 5, max = 64, message = "The length of Product Description must be 5-64 characters.")
     @Pattern(regexp = "^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}$", message = "Invalid Customer UUID")
-    @Column(name = "customerId")
+    @Column("customerId")
     private String customerId;
 
     @NotBlank(message = "The Product Name is required.")
     @Size(min = 3, max = 32, message = "The length of Product Name must be 3-32 characters.")
-    @Column(name = "productName")
+    @Column("productName")
     private String productName;
 
     @NotNull(message = "The Product Details is  required.")
     // @Size(min = 5, max = 64, message = "The length of Product Description must be 5-64 characters.")
     @Pattern(regexp = "^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}$", message = "Invalid Product UUID")
-    @Column(name = "productId")
+    @Column( "productId")
     private String productId;
 
     @NotNull(message = "The Price is required.")
-    @Column(name = "price")
+    @Column("price")
     private BigDecimal productPrice;
 
     @NotNull(message = "The Quantity is required.")
-    @Column(name = "quantity")
+    @Column("quantity")
     private BigDecimal quantity;
-
 
     /**
      * Empty Cart Item Entity

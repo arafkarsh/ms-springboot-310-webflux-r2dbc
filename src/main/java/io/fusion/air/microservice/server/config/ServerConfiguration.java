@@ -1,10 +1,10 @@
 package io.fusion.air.microservice.server.config;
 
-import org.apache.catalina.connector.Connector;
-import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.context.annotation.Configuration;
+// import org.apache.catalina.connector.Connector;
+// import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
+// import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+// import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+// import org.springframework.context.annotation.Configuration;
 
 /**
  * Springboot 2.7.x to 3.0 Migration
@@ -19,8 +19,10 @@ import org.springframework.context.annotation.Configuration;
  * @version:
  * @date:
  */
+/**
 @Configuration
 public class ServerConfiguration implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
+
 
     @Override
     public void customize(TomcatServletWebServerFactory factory) {
@@ -32,3 +34,4 @@ public class ServerConfiguration implements WebServerFactoryCustomizer<TomcatSer
         });
     }
 }
+ */

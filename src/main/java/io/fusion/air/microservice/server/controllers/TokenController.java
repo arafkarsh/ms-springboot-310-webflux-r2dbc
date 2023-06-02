@@ -36,10 +36,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.http.HttpHeaders;
-import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.HashMap;
 
@@ -97,7 +97,7 @@ public class TokenController extends AbstractController {
 	})
 	@GetMapping("/publickey")
 	@ResponseBody
-	public ResponseEntity<StandardResponse> getPublicKey(HttpServletRequest request) throws Exception {
+	public ResponseEntity<StandardResponse> getPublicKey() throws Exception {
 		log.debug(name()+"|Request to Generate Tokens... ");
 		cryptoKeys.setKeyFiles(getCryptoPublicKeyFile(), getCryptoPrivateKeyFile())
 				.readRSAKeyFiles();
@@ -151,10 +151,10 @@ public class TokenController extends AbstractController {
     })
 	@GetMapping("/refresh")
 	@ResponseBody
-	public ResponseEntity<StandardResponse> generate(HttpServletRequest request) throws Exception {
+	public ResponseEntity<StandardResponse> generate(ServerHttpRequest request) throws Exception {
 		log.debug(name()+"|Request to Generate Refresh Tokens... ");
 		//  final String authToken = getToken(request.getHeader(AuthorizeRequestAspect.AUTH_TOKEN));
-		final String refreshToken = getToken(request.getHeader(AuthorizeRequestAspect.REFRESH_TOKEN));
+		final String refreshToken = getToken(request.getHeaders().getFirst(AuthorizeRequestAspect.REFRESH_TOKEN));
 		String subject = jsonWebToken.getSubjectFromToken(refreshToken);
 		// Claims authTokenClaims = jwtUtil.getAllClaims(authToken);
 		Claims refreshTokenClaims = jsonWebToken.getAllClaims(refreshToken);

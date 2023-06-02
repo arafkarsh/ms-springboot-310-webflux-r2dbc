@@ -4,7 +4,7 @@
 # (C) MetaMagic Global Inc, NJ, USA, 2022
 # Apache 2.0 License
 #
-# Container Name: ms-cache-service
+# Container Name: ms-webflux-service
 #
 # Microservices Containers - SpringBoot 2.7.0 / Java 17
 #
@@ -20,8 +20,8 @@ RUN mkdir /Softwares/service
 RUN mkdir /Softwares/service/libs
 RUN mkdir /home/poduser/libs
 
-ARG SPRINGBOOT_JAR=ms-cache-service-spring-boot.jar
-ARG MAVEN_JAR=ms-cache-service-thin.jar
+ARG SPRINGBOOT_JAR=ms-webflux-service-spring-boot.jar
+ARG MAVEN_JAR=ms-webflux-service-thin.jar
 
 # Copy Service (Install)
 # COPY --chown=poduser:poduser StartService /Softwares/service/
@@ -44,6 +44,6 @@ EXPOSE 9090
 USER poduser
 
 # Start Microservice
-#ENTRYPOINT ["java","-jar","/Softwares/service/ms-cache-service-thin.jar"]
-ENTRYPOINT ["java","-jar","/Softwares/service/ms-cache-service-spring-boot.jar"]
+#ENTRYPOINT ["java","-jar","/Softwares/service/ms-webflux-service-thin.jar"]
+ENTRYPOINT ["java","-jar","/Softwares/service/ms-webflux-service-spring-boot.jar"]
 

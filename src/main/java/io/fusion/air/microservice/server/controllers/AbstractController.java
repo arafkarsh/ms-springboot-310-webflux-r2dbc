@@ -22,8 +22,6 @@ import io.fusion.air.microservice.server.config.ServiceHelp;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import static java.lang.invoke.MethodHandles.lookup;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -100,6 +98,7 @@ public abstract class AbstractController {
 	 * @param request
 	 * @return
 	 */
+	/**
 	public final String printRequestURI(HttpServletRequest request) {
 		StringBuilder sb = new StringBuilder();
 		String[] req = request.getRequestURI().split("/");
@@ -111,4 +110,5 @@ public abstract class AbstractController {
 		log.info(sb.toString());
 		return sb.toString();
 	}
+	 */
  }

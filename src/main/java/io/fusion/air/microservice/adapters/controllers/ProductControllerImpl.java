@@ -16,14 +16,11 @@
 package io.fusion.air.microservice.adapters.controllers;
 
 import io.fusion.air.microservice.adapters.security.AuthorizationRequired;
-import io.fusion.air.microservice.domain.entities.example.ProductEntity;
 import io.fusion.air.microservice.domain.exceptions.*;
 import io.fusion.air.microservice.domain.models.core.StandardResponse;
 import io.fusion.air.microservice.domain.models.example.PaymentDetails;
 import io.fusion.air.microservice.domain.models.example.PaymentStatus;
 import io.fusion.air.microservice.domain.models.example.PaymentType;
-import io.fusion.air.microservice.domain.models.example.Product;
-import io.fusion.air.microservice.domain.ports.services.ProductService;
 import io.fusion.air.microservice.server.config.ServiceConfiguration;
 import io.fusion.air.microservice.server.controllers.AbstractController;
 import io.fusion.air.microservice.utils.Utils;
@@ -43,8 +40,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.annotation.RequestScope;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -80,29 +75,6 @@ public class ProductControllerImpl extends AbstractController {
 	private ServiceConfiguration serviceConfig;
 	private String serviceName;
 
-	@Autowired
-	ProductService productServiceImpl;
-
-	/**
-	 * Create the Product
-	 */
-	@Operation(summary = "Create Product")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200",
-					description = "Create the Product",
-					content = {@Content(mediaType = "application/json")}),
-			@ApiResponse(responseCode = "404",
-					description = "Unable to Create the Product",
-					content = @Content)
-	})
-	@PostMapping("/create")
-	public ResponseEntity<StandardResponse> createProduct( @RequestBody Product _product) {
-		log.debug("|"+name()+"|Request to Create Product... "+_product);
-		ProductEntity prodEntity = productServiceImpl.createProduct(_product);
-		StandardResponse stdResponse = createSuccessResponse("Product Created");
-		stdResponse.setPayload(prodEntity);
-		return ResponseEntity.ok(stdResponse);
-	}
 
 	/**
 	 * GET Method Call to Check the Product Status
@@ -120,15 +92,11 @@ public class ProductControllerImpl extends AbstractController {
     })
 	@GetMapping("/status/{productId}")
 	@ResponseBody
-	public ResponseEntity<StandardResponse> getProductStatus(@PathVariable("productId") UUID _productId,
-														HttpServletRequest request,
-														HttpServletResponse response) throws Exception {
+	public ResponseEntity<StandardResponse> getProductStatus(@PathVariable("productId") UUID _productId)throws Exception {
 		log.debug("|"+name()+"|Request to Get Product Status.. "+_productId);
-		//  response.setHeader("Cache-Control", "no-cache");
-		// response.addCookie(new Cookie("SameSite", "Strict"));
-		ProductEntity product = productServiceImpl.getProductById(_productId);
+		// ProductEntity product = null; // productServiceImpl.getProductById(_productId);
 		StandardResponse stdResponse = createSuccessResponse("Data Fetch Success!");
-		stdResponse.setPayload(product);
+		// stdResponse.setPayload(product);
 		return ResponseEntity.ok(stdResponse);
 	}
 
@@ -148,19 +116,12 @@ public class ProductControllerImpl extends AbstractController {
 	})
 	@GetMapping("/all/")
 	@ResponseBody
-	public ResponseEntity<StandardResponse> getAllProducts(HttpServletRequest request,
-														   HttpServletResponse response) throws Exception {
+	public ResponseEntity<StandardResponse> getAllProducts() throws Exception {
 		log.debug("|"+name()+"|Request to get All Products ... ");
-		List<ProductEntity> productList = productServiceImpl.getAllProduct();
+		// List<ProductEntity> productList = null; // productServiceImpl.getAllProduct();
 		StandardResponse stdResponse = null;
-		log.info("Products List = "+productList.size());
-		if(productList == null || productList.isEmpty()) {
-			productList = createFallBackProducts();
-			stdResponse = createSuccessResponse("201","Fallback Data!");
-		} else {
-			stdResponse = createSuccessResponse("Data Fetch Success!");
-		}
-		stdResponse.setPayload(productList);
+		stdResponse = createSuccessResponse("Data Fetch Success!");
+		// stdResponse.setPayload(productList);
 		return ResponseEntity.ok(stdResponse);
 	}
 
@@ -179,9 +140,9 @@ public class ProductControllerImpl extends AbstractController {
 	@GetMapping("/search/product/{productName}")
 	public ResponseEntity<StandardResponse> searchProductsByName(@PathVariable("productName") String _productName) {
 		log.debug("|"+name()+"|Request to Search the Product By Name ... "+_productName);
-		List<ProductEntity> products = productServiceImpl.fetchProductsByName(_productName);
+		// List<ProductEntity> products = null; // productServiceImpl.fetchProductsByName(_productName);
 		StandardResponse stdResponse = createSuccessResponse("Products Found For Search Term = "+_productName);
-		stdResponse.setPayload(products);
+		// stdResponse.setPayload(products);
 		return ResponseEntity.ok(stdResponse);
 	}
 
@@ -200,9 +161,9 @@ public class ProductControllerImpl extends AbstractController {
 	@GetMapping("/search/price/{price}")
 	public ResponseEntity<StandardResponse> searchProductsByPrice(@PathVariable("price") BigDecimal _price) {
 		log.debug("|"+name()+"|Request to Search the Product By Price... "+_price);
-		List<ProductEntity> products = productServiceImpl.fetchProductsByPriceGreaterThan(_price);
+		// List<ProductEntity> products = null; // productServiceImpl.fetchProductsByPriceGreaterThan(_price);
 		StandardResponse stdResponse = createSuccessResponse("Products Found for Price >= "+_price);
-		stdResponse.setPayload(products);
+		// stdResponse.setPayload(products);
 		return ResponseEntity.ok(stdResponse);
 	}
 
@@ -221,9 +182,9 @@ public class ProductControllerImpl extends AbstractController {
 	@GetMapping("/search/active/")
 	public ResponseEntity<StandardResponse> searchActiveProducts() {
 		log.debug("|"+name()+"|Request to Search the Active Products ... ");
-		List<ProductEntity> products = productServiceImpl.fetchActiveProducts();
-		StandardResponse stdResponse = createSuccessResponse("Active Products Found = "+products.size());
-		stdResponse.setPayload(products);
+		// List<ProductEntity> products = null; // productServiceImpl.fetchActiveProducts();
+		StandardResponse stdResponse = createSuccessResponse("Active Products Found = 0");
+		// stdResponse.setPayload(products);
 		return ResponseEntity.ok(stdResponse);
 	}
 
@@ -243,9 +204,9 @@ public class ProductControllerImpl extends AbstractController {
 	@PutMapping("/deactivate/{productId}")
 	public ResponseEntity<StandardResponse> deActivateProduct(@PathVariable("productId") UUID _productId) {
 		log.debug("|"+name()+"|Request to De-Activate the Product... "+_productId);
-		ProductEntity product = productServiceImpl.deActivateProduct(_productId);
+		// ProductEntity product = null; // productServiceImpl.deActivateProduct(_productId);
 		StandardResponse stdResponse = createSuccessResponse("Product De-Activated");
-		stdResponse.setPayload(product);
+		// stdResponse.setPayload(product);
 		return ResponseEntity.ok(stdResponse);
 	}
 
@@ -265,73 +226,9 @@ public class ProductControllerImpl extends AbstractController {
 	@PutMapping("/activate/{productId}")
 	public ResponseEntity<StandardResponse> activateProduct(@PathVariable("productId") UUID _productId) {
 		log.debug("|"+name()+"|Request to Activate the Product... "+_productId);
-		ProductEntity product = productServiceImpl.activateProduct(_productId);
+		// ProductEntity product = null; // productServiceImpl.activateProduct(_productId);
 		StandardResponse stdResponse = createSuccessResponse("Product Activated");
-		stdResponse.setPayload(product);
-		return ResponseEntity.ok(stdResponse);
-	}
-
-	/**
-	 * Update the Product Details
-	 * This API Can be tested for Optimistic Lock Exceptions as the Entity is a Versioned Entity
-	 */
-	@Operation(summary = "Update the Product")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200",
-					description = "Product Updated",
-					content = {@Content(mediaType = "application/json")}),
-			@ApiResponse(responseCode = "400",
-					description = "Unable to Update the Product",
-					content = @Content)
-	})
-	@PutMapping("/update/")
-	public ResponseEntity<StandardResponse> updateProduct(@Valid @RequestBody ProductEntity _product) {
-		log.debug("|"+name()+"|Request to Update Product Details... "+_product);
-		ProductEntity prodEntity = productServiceImpl.updateProduct(_product);
-		StandardResponse stdResponse = createSuccessResponse("Product Updated!");
-		stdResponse.setPayload(prodEntity);
-		return ResponseEntity.ok(stdResponse);
-	}
-
-	/**
-	 * Update the Product Price
-	 */
-	@Operation(summary = "Update the Product Price")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200",
-					description = "Product Price Updated",
-					content = {@Content(mediaType = "application/json")}),
-			@ApiResponse(responseCode = "400",
-					description = "Unable to Update the Product Price",
-					content = @Content)
-	})
-	@PutMapping("/update/price")
-	public ResponseEntity<StandardResponse> updatePrice(@Valid @RequestBody ProductEntity _product) {
-		log.debug("|"+name()+"|Request to Update Product Price... ["+_product);
-		ProductEntity prodEntity = productServiceImpl.updatePrice(_product);
-		StandardResponse stdResponse = createSuccessResponse("Product Price Updated");
-		stdResponse.setPayload(prodEntity);
-		return ResponseEntity.ok(stdResponse);
-	}
-
-	/**
-	 * Update the Product Details
-	 */
-	@Operation(summary = "Update the Product Details")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200",
-					description = "Product Details Updated",
-					content = {@Content(mediaType = "application/json")}),
-			@ApiResponse(responseCode = "400",
-					description = "Unable to Update the Product Details",
-					content = @Content)
-	})
-	@PutMapping("/update/details")
-	public ResponseEntity<StandardResponse> updateProductDetails(@Valid @RequestBody ProductEntity _product) {
-		log.debug("|"+name()+"|Request to Update Product Details... "+_product);
-		ProductEntity prodEntity = productServiceImpl.updateProductDetails(_product);
-		StandardResponse stdResponse = createSuccessResponse("Product Details Updated");
-		stdResponse.setPayload(prodEntity);
+		// stdResponse.setPayload(product);
 		return ResponseEntity.ok(stdResponse);
 	}
 
@@ -351,27 +248,9 @@ public class ProductControllerImpl extends AbstractController {
 	@DeleteMapping("/{productId}")
 	public ResponseEntity<StandardResponse> deleteProduct(@PathVariable("productId") UUID _productId) {
 		log.debug("|"+name()+"|Request to Delete Product... "+_productId);
-		productServiceImpl.deleteProduct(_productId);
+		// productServiceImpl.deleteProduct(_productId);
 		StandardResponse stdResponse = createSuccessResponse("Product Deleted!");
 		return ResponseEntity.ok(stdResponse);
-	}
-
-
-	/**
-	 * Create Fall Back Product for Testing Purpose ONLY
-	 * @return
-	 */
-	private List<ProductEntity> createFallBackProducts() {
-		List<ProductEntity> productList = new ArrayList<ProductEntity>();
-		productList.add(new ProductEntity("iPhone 10", "iPhone 10, 64 GB", new BigDecimal(60000), "12345"));
-		productList.add(new ProductEntity("iPhone 11", "iPhone 11, 128 GB", new BigDecimal(70000), "12345"));
-		productList.add(new ProductEntity("Samsung Galaxy s20", "Samsung Galaxy s20, 256 GB", new BigDecimal(80000), "12345"));
-
-		try {
-			productServiceImpl.createProductsEntity(productList);
-			productList = productServiceImpl.getAllProduct();
-		} catch (Exception ignored) { ignored.printStackTrace();}
-		return productList;
 	}
 
 	/**
@@ -419,7 +298,7 @@ public class ProductControllerImpl extends AbstractController {
 			}
 	)
 	@PostMapping("/processProducts")
-    public ResponseEntity<StandardResponse> processProduct(@RequestBody PaymentDetails _payDetails) {
+    public ResponseEntity<StandardResponse> processProduct(@Valid @RequestBody PaymentDetails _payDetails) {
 		log.debug("|"+name()+"|Request to process Product... "+_payDetails);
 		if(_payDetails != null && _payDetails.getOrderValue() > 0) {
 			StandardResponse stdResponse = createSuccessResponse("Processing Success!");

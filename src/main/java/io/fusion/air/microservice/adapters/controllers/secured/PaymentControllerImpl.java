@@ -31,7 +31,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -39,7 +38,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.annotation.RequestScope;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.UUID;
@@ -88,8 +86,7 @@ public class PaymentControllerImpl extends AbstractController {
     })
 	@GetMapping("/status/{referenceNo}")
 	@ResponseBody
-	public ResponseEntity<StandardResponse> getStatus(@PathVariable("referenceNo") String _referenceNo,
-														HttpServletRequest request) throws Exception {
+	public ResponseEntity<StandardResponse> getStatus(@PathVariable("referenceNo") String _referenceNo) throws Exception {
 		log.debug("|"+name()+"|Request to Payment Status of Service... ");
 		StandardResponse stdResponse = createSuccessResponse("Processing Success!");
 		// Response Object

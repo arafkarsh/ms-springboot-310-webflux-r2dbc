@@ -2,12 +2,12 @@
 # Service Name & API Details -  Version, Path
 # =======================================================================
 service.org=orgname
-service.name=MS-Cache
-service.api.name=ms-cache
+service.name=MS-WebFlux
+service.api.name=ms-webflux
 service.api.prefix=api
 service.api.version=v1
 service.api.error.prefix=13
-service.container=ms-cache-service
+service.container=ms-webflux-service
 #service.api.repository=https://github.com/MetaArivu/${service.container}
 service.api.repository=https://github.com/MetaArivu/ms-cache-kafka-quickstart
 service.api.path=/${service.api.name}/${service.api.prefix}/${service.api.version}
@@ -16,7 +16,7 @@ service.license=Apache 2 License
 # =======================================================================
 # Microservice Server Properties
 # =======================================================================
-server.port=9091
+server.port=9092
 server.version=0.7.1
 server.restart=false
 server.resources.url=${service.url}${service.api.path}
@@ -69,11 +69,11 @@ logging.file.total-size-cap=3GB
 # =======================================================================
 # H2 DB Properties
 # =======================================================================
-#db.server=mem
-#db.port=5432
-#db.name=ms_cache
-#db.schema=ms_schema
-#db.vendor=H2
+db.server=mem
+db.port=5432
+db.name=ms_cache
+db.schema=ms_schema
+db.vendor=H2
 # To Store the Data in File
 #spring.datasource.url=jdbc:h2:file:/data/demo
 #spring.datasource.url=jdbc:h2:${db.server}:${db.name};DB_CLOSE_ON_EXIT=FALSE
@@ -82,28 +82,34 @@ logging.file.total-size-cap=3GB
 #spring.datasource.password=password
 #spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
 # =======================================================================
+# DB Reactive Properties
+# =======================================================================
+spring.r2dbc.url=r2dbc:h2://${db.server}:${db.port}/${db.name};DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+spring.r2dbc.username=sa
+spring.r2dbc.password=password
+# =======================================================================
 # Database Properties -
 # To USE THIS COMMENT OUT H2 DB Properties & Un Comment Below Properties
 # =======================================================================
-db.server=localhost
-db.port=5433
-db.name=ms_cache
-db.schema=ms_schema
-db.vendor=PostgreSQL
+#db.server=localhost
+#db.port=5433
+#db.name=ms_cache
+#db.schema=ms_schema
+#db.vendor=PostgreSQL
 # =======================================================================
 # PostgreSQL DB JDBC Properties
 # =======================================================================
-spring.datasource.url=jdbc:postgresql://${db.server}:${db.port}/${db.name}
-spring.datasource.driverClassName=org.postgresql.ds.PGSimpleDataSource
-spring.datasource.username=postgres
-spring.datasource.password=
-spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
+#spring.datasource.url=jdbc:postgresql://${db.server}:${db.port}/${db.name}
+#spring.datasource.driverClassName=org.postgresql.ds.PGSimpleDataSource
+#spring.datasource.username=postgres
+#spring.datasource.password=
+#spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
 # =======================================================================
-# PostgreSQL DB Reactive Properties
+# DB Reactive Properties
 # =======================================================================
-spring.r2dbc.url=r2dbc:postgresql://${db.server}:${db.port}/${db.name}
-spring.r2dbc.username=postgres
-spring.r2dbc.password=
+#spring.r2dbc.url=r2dbc:postgresql://${db.server}:${db.port}/${db.name}
+#spring.r2dbc.username=postgres
+#spring.r2dbc.password=
 # =======================================================================
 # JPA / Hibernate Properties
 # ------------------------------------------------------------------------

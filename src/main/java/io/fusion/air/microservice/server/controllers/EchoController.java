@@ -35,8 +35,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.annotation.RequestScope;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -107,7 +105,7 @@ public class EchoController extends AbstractController {
 	})
 	@GetMapping("/echo")
 	@ResponseBody
-	public ResponseEntity<StandardResponse> getHealth(HttpServletRequest request) throws Exception {
+	public ResponseEntity<StandardResponse> getHealth() throws Exception {
 		log.debug(name()+"|Request to Health of Service... ");
 		StandardResponse stdResponse = createSuccessResponse("Service is OK!");
 		HashMap<String, Object> payload = new LinkedHashMap<String, Object>();

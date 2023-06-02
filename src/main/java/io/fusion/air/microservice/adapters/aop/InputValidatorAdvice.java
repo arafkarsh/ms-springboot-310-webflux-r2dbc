@@ -29,7 +29,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import jakarta.validation.ConstraintViolationException;
 import java.util.*;
@@ -43,9 +42,9 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @version:
  * @date:
  */
-@ControllerAdvice
-@Order(1)
-public class InputValidatorAdvice extends ResponseEntityExceptionHandler {
+// @ControllerAdvice
+// @Order(1)
+public class InputValidatorAdvice  {
 
     // Set Logger -> Lookup will automatically determine the class name.
     private static final Logger log = getLogger(lookup().lookupClass());

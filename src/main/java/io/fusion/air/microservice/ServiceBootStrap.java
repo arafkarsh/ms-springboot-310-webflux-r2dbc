@@ -15,11 +15,6 @@
  */
 package io.fusion.air.microservice;
 
-import jakarta.annotation.PostConstruct;
-// import javax.servlet.MultipartConfigElement;
-// import jakarta.servlet.MultipartConfigElement;
-import jakarta.servlet.http.HttpServletRequest;
-
 import io.fusion.air.microservice.adapters.aop.ExceptionHandlerAdvice;
 import io.fusion.air.microservice.server.config.ServiceConfiguration;
 import io.fusion.air.microservice.server.controllers.HealthController;
@@ -30,24 +25,13 @@ import org.slf4j.Logger;
 import org.springdoc.core.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.web.servlet.MultipartConfigFactory;
-import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Primary;
-import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
-import org.springframework.util.unit.DataSize;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -70,32 +54,26 @@ import static java.lang.invoke.MethodHandles.lookup;
 import static org.slf4j.LoggerFactory.getLogger;
 
 // Cache
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.reactive.config.EnableWebFlux;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
 
 /**
- * Micro Service - Spring Boot Application
+ * Micro Service - Spring Boot WebFlux Reactive Application
  * API URL : http://localhost:9090/service/api/v1/swagger-ui.html
  *
  * @author arafkarsh
  */
-@EnableScheduling
-@ServletComponentScan
-@ComponentScan(basePackages="io.fusion.air.microservice")
-@RestController
-@EnableCaching
 @EnableWebFlux
-// Reactive R2DBC Repositories
-@EnableR2dbcRepositories(basePackages = {
-		"io.fusion.air.microservice.adaptersReactive.repository.*"
-})
-@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
-@SpringBootApplication(scanBasePackages = { "io.fusion.air.microservice" })
-// @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
+@SpringBootApplication
+/**
+ * This @SpringBootApplication annotation is a convenience annotation that adds all of the following:
+ *
+ * @Configuration: Tags the class as a source of bean definitions for the application context.
+ * @EnableAutoConfiguration: Tells Spring Boot to start adding beans based on classpath settings, other beans,
+ * and various property settings.
+ * @ComponentScan: Tells Spring to look for other components, configurations, and services in the com/example
+ * package, letting it find the controllers.
+ */
 public class ServiceBootStrap {
 
 	// Set Logger -> Lookup will automatically determine the class name.
@@ -105,8 +83,6 @@ public class ServiceBootStrap {
 	private final String title = "<h1>Welcome to MICRO service<h1/>"
 			+"<h3>Copyright (c) COMPANY, 2022</h3>"
 			+"<h5>Build No: BN :: Build Date: BD :: </h5>";
-
-	private static ConfigurableApplicationContext context;
 
 	@Autowired
 	private ServiceConfiguration serviceConfig;
@@ -133,47 +109,13 @@ public class ServiceBootStrap {
 	public static void start(String[] args) {
 		log.info("Booting Service ..... ..");
 		try {
-			context = SpringApplication.run(ServiceBootStrap.class, args);
+			// context = SpringApplication.run(ServiceBootStrap.class, args);
+			SpringApplication.run(ServiceBootStrap.class, args);
 			log.info("Booting Service ..... ...Startup completed!");
 		} catch (Exception e) {
+			log.info("ERROR IN Booting Service ..... ...");
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * Restart the Server
-	 */
-	public static void restart() {
-		log.info("Restarting Service ..... .. 1");
-		ApplicationArguments args = context.getBean(ApplicationArguments.class);
-		log.info("Restarting Service ..... .. 2");
-
-		Thread thread = new Thread(() -> {
-			context.close();
-			start(args.getSourceArgs());
-		});
-		log.info("Restarting Service ..... .. 3");
-
-		thread.setDaemon(false);
-		thread.start();
-	}
-
-	/**
-	 * Load the Configuration
-	 */
-	@PostConstruct
-	public void configure() {
-	}
-
-	@Bean
-	public WebMvcConfigurer corsConfigurer()
-	{
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedOrigins("*");
-			}
-		};
 	}
 
 	/**
@@ -181,32 +123,13 @@ public class ServiceBootStrap {
 	 * @return
 	 */
 	@GetMapping("/root")
-	public String home(HttpServletRequest request) {
-		log.info("Request to Home Page of Service... "+printRequestURI(request));
+	public String home() {
+		log.info("Request to Home Page of Service... ");
 		return (serviceConfig == null) ? this.title :
 				this.title.replaceAll("MICRO", serviceConfig.getServiceName())
 						.replaceAll("COMPANY", serviceConfig.getServiceOrg())
 						.replaceAll("BN", "" + serviceConfig.getBuildNumber())
 						.replaceAll("BD", serviceConfig.getBuildDate());
-	}
-
-	/**
-	 * Print the Request
-	 *
-	 * @param request
-	 * @return
-	 */
-	public static String printRequestURI(final HttpServletRequest request) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("URI: ").append(request.getRequestURI());
-		String[] req = request.getRequestURI().split("/");
-		sb.append("Params Size = "+req.length+" : ");
-		for(int x=0; x < req.length; x++) {
-			sb.append(req[x]).append("|");
-		}
-		sb.append("\n");
-		log.info("HttpServletRequest: ["+sb.toString()+"]");
-		return sb.toString();
 	}
 
 	/**
@@ -329,10 +252,6 @@ public class ServiceBootStrap {
 		return serverList;
 	}
 
-	@Bean
-	ForwardedHeaderFilter forwardedHeaderFilter() {
-		return new ForwardedHeaderFilter();
-	}
 	/**
 	 * Returns the REST Template
 	 * @return
@@ -352,26 +271,5 @@ public class ServiceBootStrap {
 		return new ObjectMapper()
 				.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 				.findAndRegisterModules();
-	}
-
-	/**
-	 * All file upload till 512 MB
-	 * returns MultipartConfigElement
-	 * @return
-	 */
-	/**
-	 * Deprecated from SpringBoot 3.1
-	@Bean
-	public MultipartConfigElement multipartConfigElement() {
-		MultipartConfigFactory factory = new MultipartConfigFactory();
-		factory.setMaxFileSize(DataSize.ofBytes(500000000L));
-		return factory.createMultipartConfig();
-	}
-	 */
-
-	@Primary
-	@Bean
-	public ExceptionHandlerAdvice serviceExceptionAdvisor(){
-		return new ExceptionHandlerAdvice();
 	}
 }

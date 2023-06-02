@@ -34,8 +34,8 @@ import io.fusion.air.microservice.domain.models.core.StandardResponse;
 import io.fusion.air.microservice.server.config.ServiceConfiguration;
 import org.slf4j.MDC;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.ResponseCookie;
+import org.springframework.web.server.ServerWebExchange;
 
 /**
  * 
@@ -311,37 +311,34 @@ public final class Utils {
 
 	/**
 	 * Create Cookie
-	 * @param request
 	 * @param _key
 	 * @param _value
 	 * @return
 	 */
-	public static Cookie createCookie(HttpServletRequest request, String _key, String _value) {
-		Cookie c = new Cookie(_key, _value);
-		// c.setDomain(serviceConfig.getServerHost());
-		c.setSecure(true);
-		c.setHttpOnly(true);
-		// c.setMaxAge((int)JsonWebToken.EXPIRE_IN_EIGHT_HOUR);
-		// c.setPath(request.getRequestURI());
-		return c;
+	public static ResponseCookie createCookie(String _key, String _value) {
+		ResponseCookie cookie = ResponseCookie.from(_key, _value)
+				.httpOnly(true)
+				.secure(true)
+				.path("/")
+				.build();
+		return cookie;
 	}
 
 	/**
 	 * Create Cookie
-	 * @param request
 	 * @param _key
 	 * @param _value
 	 * @param _age
 	 * @return
 	 */
-	public static Cookie createCookie(HttpServletRequest request, String _key, String _value, int _age) {
-		Cookie c = new Cookie(_key, _value);
-		// c.setDomain(serviceConfig.getServerHost());
-		c.setSecure(true);
-		c.setHttpOnly(true);
-		c.setMaxAge(_age);
-		// c.setPath(request.getRequestURI());
-		return c;
+	public static ResponseCookie createCookie(String _key, String _value, int _age) {
+		ResponseCookie cookie = ResponseCookie.from(_key, _value)
+				.httpOnly(true)
+				.secure(true)
+				.maxAge(_age)
+				.path("/")
+				.build();
+		return cookie;
 	}
 
 	/**

@@ -6,8 +6,10 @@ import io.fusion.air.microservice.utils.Utils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.web.server.ServerWebExchange;
 import java.util.Enumeration;
 import java.util.UUID;
 
@@ -24,21 +26,19 @@ public class HeaderManager {
      * @param request
      * @param response
      */
-    public static void returnHeaders(HttpServletRequest request, HttpServletResponse response) {
-        response.addCookie(Utils.createCookie(request, "SameSite", "Strict"));
-        response.addCookie(Utils.createCookie(request, "JSESSIONID", UUID.randomUUID().toString()));
+    public static void returnHeaders(ServerHttpRequest request, ServerHttpResponse response) {
 
-        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String token = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         if(token != null) {
-            response.addHeader(HttpHeaders.AUTHORIZATION, token);
+            response.getHeaders().add(HttpHeaders.AUTHORIZATION, token);
         }
-        String refresh = request.getHeader(AuthorizeRequestAspect.REFRESH_TOKEN);
+        String refresh = request.getHeaders().getFirst(AuthorizeRequestAspect.REFRESH_TOKEN);
         if(refresh != null) {
-            response.addHeader(AuthorizeRequestAspect.REFRESH_TOKEN, refresh);
+            response.getHeaders().add(AuthorizeRequestAspect.REFRESH_TOKEN, refresh);
         }
-        String txToken = request.getHeader("TX-TOKEN");
+        String txToken = request.getHeaders().getFirst("TX-TOKEN");
         if (txToken != null) {
-            response.addHeader("TX-TOKEN", txToken);
+            response.getHeaders().add("TX-TOKEN", txToken);
         }
     }
 
@@ -47,14 +47,16 @@ public class HeaderManager {
      * @param request
      * @return
      */
-    public static HttpHeaders extractHeaders(HttpServletRequest request) {
+    public static HttpHeaders extractHeaders(ServerHttpRequest request) {
         HttpHeaders headers = new HttpHeaders();
+        /**
         Enumeration<String> hNames = request.getHeaderNames();
         while(hNames.hasMoreElements()) {
             String name = hNames.nextElement();
             headers.addIfAbsent(name, request.getHeader(name));
             System.out.println(name + " = " + request.getHeader(name));
         }
+         */
         return headers;
     }
 
@@ -63,20 +65,20 @@ public class HeaderManager {
      * @param request
      * @return
      */
-    public static HttpHeaders extractTokens(HttpServletRequest request) {
+    public static HttpHeaders extractTokens(ServerHttpRequest request) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("accept", "application/json");
         headers.setContentType(MediaType.APPLICATION_JSON);
         if(request != null) {
-            String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+            String token = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
             if (token != null) {
                 headers.addIfAbsent(HttpHeaders.AUTHORIZATION, token);
             }
-            String refresh = request.getHeader(AuthorizeRequestAspect.REFRESH_TOKEN);
+            String refresh = request.getHeaders().getFirst(AuthorizeRequestAspect.REFRESH_TOKEN);
             if (refresh != null) {
                 headers.addIfAbsent(AuthorizeRequestAspect.REFRESH_TOKEN, refresh);
             }
-            String txToken = request.getHeader("TX-TOKEN");
+            String txToken = request.getHeaders().getFirst("TX-TOKEN");
             if (txToken != null) {
                 headers.addIfAbsent("TX-TOKEN", txToken);
             }
