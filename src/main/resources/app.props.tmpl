@@ -8,8 +8,7 @@ service.api.prefix=api
 service.api.version=v1
 service.api.error.prefix=13
 service.container=ms-webflux-service
-#service.api.repository=https://github.com/MetaArivu/${service.container}
-service.api.repository=https://github.com/MetaArivu/ms-cache-kafka-quickstart
+service.api.repository=https://github.com/arafkarsh/ms-springboot-310-webflux-r2dbc
 service.api.path=/${service.api.name}/${service.api.prefix}/${service.api.version}
 service.url=http://www.metarivu.com/
 service.license=Apache 2 License
@@ -74,19 +73,14 @@ db.port=5432
 db.name=ms_cache
 db.schema=ms_schema
 db.vendor=H2
-# To Store the Data in File
-#spring.datasource.url=jdbc:h2:file:/data/demo
-#spring.datasource.url=jdbc:h2:${db.server}:${db.name};DB_CLOSE_ON_EXIT=FALSE
-#spring.datasource.driverClassName=org.h2.Driver
-#spring.datasource.username=sa
-#spring.datasource.password=password
-#spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.datasource.username=sa
+spring.datasource.password=password
 # =======================================================================
 # DB Reactive Properties
 # =======================================================================
+# To Store the Data in File
+#spring.r2dbc.url=jdbc:h2:file:/data/demo
 spring.r2dbc.url=r2dbc:h2://${db.server}:${db.port}/${db.name};DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-spring.r2dbc.username=sa
-spring.r2dbc.password=password
 # =======================================================================
 # Database Properties -
 # To USE THIS COMMENT OUT H2 DB Properties & Un Comment Below Properties
@@ -96,31 +90,14 @@ spring.r2dbc.password=password
 #db.name=ms_cache
 #db.schema=ms_schema
 #db.vendor=PostgreSQL
-# =======================================================================
-# PostgreSQL DB JDBC Properties
-# =======================================================================
-#spring.datasource.url=jdbc:postgresql://${db.server}:${db.port}/${db.name}
-#spring.datasource.driverClassName=org.postgresql.ds.PGSimpleDataSource
 #spring.datasource.username=postgres
 #spring.datasource.password=
-#spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
 # =======================================================================
 # DB Reactive Properties
 # =======================================================================
 #spring.r2dbc.url=r2dbc:postgresql://${db.server}:${db.port}/${db.name}
-#spring.r2dbc.username=postgres
-#spring.r2dbc.password=
-# =======================================================================
-# JPA / Hibernate Properties
-# ------------------------------------------------------------------------
-spring.jpa.show-sql=true
-spring.jpa.defer-datasource-initialization=true
-#spring.sql.init.data-locations=data-trans.sql
-# Hibernate ddl auto (create, create-drop, validate, update)
-spring.jpa.hibernate.ddl-auto=create-drop
-spring.jpa.properties.hibernate.format_sql=true
-spring.jpa.properties.hibernate.validator.apply_to_ddl=false
-#spring.jpa.properties.hibernate.check_nullability=true
+spring.r2dbc.username=${spring.datasource}
+spring.r2dbc.password=${spring.datasource.password}
 # =======================================================================
 # Enabling H2 Console
 # =======================================================================
