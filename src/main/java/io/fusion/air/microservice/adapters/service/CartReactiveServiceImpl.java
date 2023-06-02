@@ -1,6 +1,6 @@
-package io.fusion.air.microservice.adaptersReactive.service;
+package io.fusion.air.microservice.adapters.service;
 
-import io.fusion.air.microservice.adaptersReactive.repository.CartItemRepository;
+import io.fusion.air.microservice.adapters.repository.CartItemRepository;
 import io.fusion.air.microservice.domain.entities.example.CartItemEntity;
 import io.fusion.air.microservice.domain.models.example.CartItem;
 import io.fusion.air.microservice.domain.ports.services.CartReactiveService;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @Component
 public class CartReactiveServiceImpl implements CartReactiveService {
 
-    // @Autowired
+    @Autowired
     private CartItemRepository cartItemRepository;
 
     @Override

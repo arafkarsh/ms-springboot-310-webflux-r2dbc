@@ -1,4 +1,4 @@
-package io.fusion.air.microservice.adaptersReactive.router;
+package io.fusion.air.microservice.adapters.router;
 
 import io.fusion.air.microservice.domain.ports.services.CartReactiveService;
 import org.springframework.beans.factory.annotation.Autowired;

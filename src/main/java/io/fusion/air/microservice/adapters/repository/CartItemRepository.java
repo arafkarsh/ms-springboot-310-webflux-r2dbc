@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.fusion.air.microservice.adaptersReactive.repository;
+package io.fusion.air.microservice.adapters.repository;
 
 import io.fusion.air.microservice.domain.entities.example.CartItemEntity;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
@@ -30,7 +30,7 @@ import java.util.UUID;
  * @date:
  */
 @Component
-// @Repository
+@Repository
 public interface CartItemRepository extends ReactiveCrudRepository<CartItemEntity, UUID> {
 
     /**
