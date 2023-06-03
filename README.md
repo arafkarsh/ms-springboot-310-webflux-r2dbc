@@ -7,15 +7,6 @@ THIS REPOSITORY IS UNDER DEVELOPMENT - NOT FOR EXTERNAL USE NOW!
 THIS MESSAGE WILL BE REMOVED ONCE THE REPOSITORY IS READY FOR USE.
 --------------------------------------------------------------------------------------------------
 
-Two versions are available for the template
-
-1. v0.5.x = SpringBoot 2.7.2 with Java 8 and Java EE
-2. v0.6.x = SpringBoot 3.1.0 with Java 17 and Jakarta EE
-3. v0.7.1 = SpringBoot 3.1.0 with WebFlux, R2DBC and Reactive Framework
-4. v0.8.x > main with SpringBoot 3.1.0 with other features
-
-Checkout the respective branches for the Microservices template
-
 ## Microservice Structure
 
 ![Package Structure](https://raw.githubusercontent.com/MetaArivu/ms-cache-kafka-quickstart/master/diagrams/MS-Pkg-Structure.jpg)
@@ -28,15 +19,16 @@ Checkout the respective branches for the Microservices template
 4. Standardized REST Responses (...domain.models.StandardResponse) 
 5. Security using JWT Tokens (...adapters.security)
 6. Encrypting Sensitive Data using Encryption Algorithms (...security)
-7. JPA configurations for H2 and PostgreSQL (...server.config)
+7. R2DBC configurations for H2 and PostgreSQL (...server.config)
 
 ### Pre-Requisites 
 
 1. SpringBoot 3.1
 2. Java 17 
-3. Jakarta EE 10 (jakarta.servlet.*, jakarta.persistence.*, jakarta.validation.*)
-4. Maven 3.8.6
-5. Git 2.31
+3. Project Reactor
+4. R2DBC
+5. Maven 3.8.6
+6. Git 2.31
 
 ### Microservice Cache / Kafka Template gives you a 
 
