@@ -15,35 +15,43 @@
  */
 package io.fusion.air.microservice.domain.ports.services;
 
-import io.fusion.air.microservice.domain.entities.example.CartItemEntity;
-import io.fusion.air.microservice.domain.models.example.CartItem;
+import io.fusion.air.microservice.domain.entities.example.CountryEntity;
 import reactor.core.publisher.Flux;
-
-import java.util.UUID;
+import reactor.core.publisher.Mono;
 
 /**
  * @author: Araf Karsh Hamid
  * @version:
  * @date:
  */
-public interface CartReactiveService {
+public interface CountryReactiveService {
 
     /**
-     * Get All Cart Items by Customer ID
-     * @param customerId
+     * Save the Country
+     * @param country
+     */
+    public void save(CountryEntity country);
+
+    public Flux<CountryEntity> findAll();
+
+    /**
+     * Returns the Country By Country Code
+     * @param code
      * @return
      */
-    public Flux<CartItemEntity> findByCustomerId(String customerId);
+    public Mono<CountryEntity> findByCountryCode(String code);
 
     /**
-     * Save Cart Item
-     * @param cartItem
+     * Returns the Country by Country ID
+     * @param countryId
+     * @return
      */
-    public void saveCartItem(CartItem cartItem);
+    public Mono<CountryEntity> findByCountryId(String countryId);
 
     /**
-     * Delete Cart Item
-     * @param itemId
+     * Delete the Country
+     * @param country
      */
-    public void deleteCartItem(UUID itemId);
+    public void delete(CountryEntity country);
+
 }
