@@ -38,7 +38,7 @@ public interface CartItemRepository extends ReactiveCrudRepository<CartItemEntit
      * @param customerId
      * @return
      */
-    public Flux<CartItemEntity> findByCustomerId(UUID customerId);
+    public Flux<CartItemEntity> findByCustomerId(String customerId);
 
     /**
      * Returns all the Items for the Customer ID and Product ID
@@ -46,6 +46,6 @@ public interface CartItemRepository extends ReactiveCrudRepository<CartItemEntit
      * @param productId
      * @return
      */
-    public Flux<CartItemEntity> findByCustomerIdAndProductId(UUID customerId, UUID productId);
+    public Flux<CartItemEntity> findByCustomerIdAndProductId(String customerId, String productId);
 
 }

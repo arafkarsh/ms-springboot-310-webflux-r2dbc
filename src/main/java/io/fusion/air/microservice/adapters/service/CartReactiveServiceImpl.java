@@ -22,7 +22,7 @@ public class CartReactiveServiceImpl implements CartReactiveService {
     private CartItemRepository cartItemRepository;
 
     @Override
-    public Flux<CartItemEntity> findByCustomerId(UUID customerId) {
+    public Flux<CartItemEntity> findByCustomerId(String customerId) {
         return cartItemRepository.findByCustomerId(customerId);
     }
 

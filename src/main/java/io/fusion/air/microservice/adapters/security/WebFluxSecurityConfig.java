@@ -24,11 +24,11 @@ public class WebFluxSecurityConfig {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
-                // .httpBasic().and() // Enable HTTP Basic Authentication
-                .authorizeExchange()
-                .anyExchange().permitAll()
-                // .anyExchange().authenticated()
-                .and().csrf().disable() // You might want to disable CSRF if you're not using sessions
+                .authorizeExchange(authorize -> authorize
+                        .pathMatchers("/**").permitAll()
+                        .anyExchange().permitAll()
+                )
+                .csrf(csrf -> csrf.disable())
                 .build();
     }
 

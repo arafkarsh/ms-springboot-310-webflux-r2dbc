@@ -18,7 +18,7 @@ public interface CartReactiveService {
      * @param customerId
      * @return
      */
-    public Flux<CartItemEntity> findByCustomerId(UUID customerId);
+    public Flux<CartItemEntity> findByCustomerId(String customerId);
 
     /**
      * Save Cart Item
