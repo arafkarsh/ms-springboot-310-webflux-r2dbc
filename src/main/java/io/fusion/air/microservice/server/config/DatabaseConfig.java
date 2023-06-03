@@ -20,7 +20,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
+import org.springframework.r2dbc.connection.init.ConnectionFactoryInitializer;
+import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 // REACTIVE IMPORTS
@@ -99,10 +102,28 @@ public class DatabaseConfig {
                 .option(DRIVER, "postgresql")
                 .option(HOST, "localhost")
                 .option(PORT, 5433)
+                .option(DATABASE, "ms_cache")
                 .option(USER, "postgres")
                 .option(PASSWORD, "")
-                .option(DATABASE, "ms-cache")
                 .build());
+    }
+
+    // =================================================================================================================
+    // Database INIT
+    // =================================================================================================================
+    /**
+     * Create the Database and Tables if it doesn't exist
+     * @param connectionFactory
+     * @return
+     */
+    @Bean
+    ConnectionFactoryInitializer initializer(ConnectionFactory connectionFactory) {
+
+        ConnectionFactoryInitializer initializer = new ConnectionFactoryInitializer();
+        initializer.setConnectionFactory(connectionFactory);
+        initializer.setDatabasePopulator(new ResourceDatabasePopulator(new ClassPathResource("ms-webflux-h2.sql")));
+
+        return initializer;
     }
 
 }

@@ -16,8 +16,11 @@
 package io.fusion.air.microservice.domain.entities.core;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.slf4j.MDC;
 import org.springframework.data.relational.core.mapping.Column;
 
+import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * @author: Araf Karsh Hamid
@@ -26,21 +29,50 @@ import org.springframework.data.relational.core.mapping.Column;
  */
 public class AbstractBaseEntity {
 
+    /**
+     * By Setting it to updatable false,
+     * Record Audit log will always have the original data.
+     * Record Created By User
+     */
+    @Column("createdBy")
+    private String createdBy;
+
+    /**
+     * By Setting it to updatable false,
+     * Record Audit log will always have the original data.
+     * Record Created Time
+     */
+    @Column("createdTime")
+    private java.sql.Timestamp createdTime;
+
+    /**
+     * Set the updated by user.
+     */
+    @Column("updatedBy")
+    private String updatedBy;
+
+    /**
+     * Set the Updated By Time by the user.
+     */
+    @Column("updatedTime")
+    private java.sql.Timestamp updatedTime;
+
     @Column("isActive")
     private boolean isActive;
 
     @Column("version")
     private int version;
 
-    private AuditLog auditLog = new AuditLog();
-
     /**
      * Init Audit Log
      */
     @JsonIgnore
     public void initAudit() {
-        this.isActive = true;
-        this.auditLog.initAudit();
+        isActive        = true;
+        createdTime 	= new Timestamp(new Date().getTime());
+        createdBy       = MDC.get("user") == null ? "Admin" : MDC.get("user");
+        updatedBy       = createdBy;
+        updatedTime		= new Timestamp(new Date().getTime());
     }
 
     /**
@@ -48,7 +80,8 @@ public class AbstractBaseEntity {
      */
     @JsonIgnore
     public void setUpdatedBy() {
-        this.auditLog.setUpdatedBy();
+        updatedTime	= new Timestamp(new Date().getTime());
+        updatedBy	= MDC.get("user") == null ? "User" : MDC.get("user");
     }
 
     /**
@@ -68,6 +101,42 @@ public class AbstractBaseEntity {
     }
 
     /**
+     * Get the Record Created Time Stamp
+     *
+     * @return Timestamp
+     */
+    public java.sql.Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    /**
+     * Get the user who created this record.
+     *
+     * @return the createdBy
+     */
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    /**
+     * Get the Record Updated Time
+     *
+     * @return Timestamp
+     */
+    public java.sql.Timestamp getUpdatedTime() {
+        return updatedTime;
+    }
+
+    /**
+     * Get the Record updated User ID
+     *
+     * @return String (UserId)
+     */
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    /**
      * Returns if the Record is Active
      * @return
      */
@@ -83,15 +152,12 @@ public class AbstractBaseEntity {
         return version;
     }
 
-    /**
-     * Returns the Audit Log for the following fields
-     * 1. Created Time
-     * 2. Created By
-     * 3. Updated Time
-     * 4. Updated By
-     * @return
-     */
-    public AuditLog getAuditLog() {
-        return auditLog;
+    public String toString() {
+        return new StringBuilder()
+                .append(createdTime).append("|")
+                .append(createdBy).append("|")
+                .append(updatedTime).append("|")
+                .append(updatedBy)
+                .toString();
     }
 }

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -22,14 +23,17 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 @Configuration
 public class CartItemRouter {
 
+    @Value("${service.api.path:PATH}")
+    private String path;
+
     @Bean
     @RouterOperations({
             @RouterOperation(
                     path = "/cart/customer/{customerId}",
                     beanClass = CartItemHandler.class,
-                    beanMethod = "getUser",
+                    beanMethod = "getCart",
                     operation = @Operation(
-                            summary = "Get user by id",
+                            summary = "Get Cart by Customer ID",
                             security = { @SecurityRequirement(name = "bearer-key") },
                             responses = {
                                     @ApiResponse(
@@ -50,6 +54,6 @@ public class CartItemRouter {
     public RouterFunction<ServerResponse> route(CartItemHandler cartItemHandler) {
         System.out.println("Inside Router .... !<><><><><><<<<<< <<<< <<< <<< ");
         return RouterFunctions
-                .route(GET("/ms-webflux/api/v1/cart/customer/{customerId}"), cartItemHandler::getCart);
+                .route(GET(path+"/cart/customer/{customerId}"), cartItemHandler::getCart);
     }
 }
