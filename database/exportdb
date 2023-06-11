@@ -1,1 +1,1 @@
-pg_dump -U postgres -h localhost -p 5433 -d ms_cache -n ms_schema > ms-webflux.sql
+pg_dump -U postgres -h localhost -p 5433 -d ms_cache -n public > ms-webflux-pg-pub-v2.sql
