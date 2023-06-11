@@ -62,30 +62,6 @@ public class ExceptionHandlerAdvice implements ErrorWebExceptionHandler {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     /**
-     * Handles All the exceptions and Creates Standard Response with Context Specific Error Codes
-     *
-     * @param exchange
-     * @param ex
-     * @return
-     */
-    @Override
-    public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
-        ServerHttpRequest request = exchange.getRequest();
-        ServerHttpResponse response = exchange.getResponse();
-
-        StandardResponse stdResponse = throwError(ex);
-        response.setStatusCode(stdResponse.getHttpStatus());
-
-        try {
-            byte[] bytes = objectMapper.writeValueAsBytes(stdResponse);
-            DataBuffer buffer = response.bufferFactory().wrap(bytes);
-            return response.writeWith(Mono.just(buffer));
-        } catch (Exception e) {
-            return Mono.error(e);
-        }
-    }
-
-    /**
      * Create Standard Error Response
      *
      * @param _exception
@@ -107,25 +83,101 @@ public class ExceptionHandlerAdvice implements ErrorWebExceptionHandler {
         return stdResponse;
     }
 
+    /**
+     * Handles All the exceptions and Creates Standard Response with Context Specific Error Codes
+     *
+     * @param exchange
+     * @param ex
+     * @return
+     */
+    @Override
+    public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
+        ServerHttpRequest request = exchange.getRequest();
+        ServerHttpResponse response = exchange.getResponse();
+
+        StandardResponse stdResponse = getStandardResponse(ex);
+        response.setStatusCode(stdResponse.getHttpStatus());
+
+        try {
+            byte[] bytes = objectMapper.writeValueAsBytes(stdResponse);
+            DataBuffer buffer = response.bufferFactory().wrap(bytes);
+            return response.writeWith(Mono.just(buffer));
+        } catch (Exception e) {
+            return Mono.error(e);
+        }
+    }
+
+    /**
+     * Returns the Standard Response based on the Exception Type
+     * @param ex
+     * @return
+     */
+    private StandardResponse getStandardResponse(Throwable ex) {
+        StandardResponse stdResponse = null;
+        if(ex instanceof AccessDeniedException) {
+            stdResponse = throwError((AccessDeniedException) ex);
+        } else if(ex instanceof RequestRejectedException) {
+            stdResponse = throwError((RequestRejectedException)ex);
+        } else if(ex instanceof ResourceException) {
+            stdResponse = throwError((ResourceException)ex);
+        } else if(ex instanceof ResourceNotFoundException) {
+            stdResponse = throwError((ResourceNotFoundException)ex);
+        } else if(ex instanceof AuthorizationException) {
+            stdResponse = throwError((AuthorizationException)ex);
+        } else if(ex instanceof JWTTokenExtractionException) {
+            stdResponse = throwError((JWTTokenExtractionException)ex);
+        } else if(ex instanceof JWTTokenExpiredException) {
+            stdResponse = throwError((JWTTokenExpiredException)ex);
+        } else if(ex instanceof JWTTokenSubjectException) {
+            stdResponse = throwError((JWTTokenSubjectException)ex);
+        } else if(ex instanceof JWTUnDefinedException) {
+            stdResponse = throwError((JWTUnDefinedException)ex);
+        } else if(ex instanceof MessagingException) {
+            stdResponse = throwError((MessagingException)ex);
+        } else if(ex instanceof UnableToSaveException) {
+            stdResponse = throwError((UnableToSaveException)ex);
+        } else if(ex instanceof DataNotFoundException) {
+            stdResponse = throwError((DataNotFoundException)ex);
+        } else if(ex instanceof DatabaseException) {
+             stdResponse = throwErrorDatabase((DatabaseException)ex);
+        } else if(ex instanceof BusinessServiceException) {
+             stdResponse = throwErrorBusiness((BusinessServiceException)ex);
+        } else if(ex instanceof InputDataException) {
+            stdResponse = throwError((InputDataException)ex);
+        } else if(ex instanceof MandatoryDataRequiredException) {
+            stdResponse = throwError((MandatoryDataRequiredException)ex);
+        } else if(ex instanceof ResourceException) {
+            stdResponse = throwError((ResourceException)ex);
+        } else if(ex instanceof ControllerException) {
+            stdResponse = throwError((ControllerException)ex);
+        } else if (ex instanceof RuntimeException) {
+            stdResponse = throwErrorRuntime((RuntimeException)ex);
+        } else {
+            stdResponse = throwErrorThrowable(ex);
+        }
+        return stdResponse;
+    }
+
     // ================================================================================================================
     // SERVER EXCEPTIONS: ERROR CODES 430 - 439
     // ================================================================================================================
-    /**
-     * Handle Runtime Exception
-     * @param _runEx
-     * @return
-     */
-    public StandardResponse throwError(RuntimeException _runEx) {
-        return createErrorResponse(_runEx,"590",  HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
     /**
      * Handle Any Exception
      * @param _runEx
      * @return
      */
-    public StandardResponse throwError(Throwable _runEx) {
+    public StandardResponse throwErrorThrowable(Throwable _runEx) {
         return createErrorResponse(_runEx, "599",  HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Handle Runtime Exception
+     * @param _runEx
+     * @return
+     */
+    public StandardResponse throwErrorRuntime(RuntimeException _runEx) {
+        return createErrorResponse(_runEx,"590",  HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     // ================================================================================================================
@@ -245,8 +297,12 @@ public class ExceptionHandlerAdvice implements ErrorWebExceptionHandler {
      * @param _dbEx
      * @return
      */
-    public StandardResponse throwError(DatabaseException _dbEx) {
+    public StandardResponse throwErrorDatabase(DatabaseException _dbEx) {
         return createErrorResponse(_dbEx,  "440", HttpStatus.BAD_REQUEST);
+    }
+
+    public StandardResponse throwError(DataNotFoundException _dbEx) {
+        return createErrorResponse(_dbEx,  "441", HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -266,7 +322,7 @@ public class ExceptionHandlerAdvice implements ErrorWebExceptionHandler {
      * @param _buEx
      * @return
      */
-    public StandardResponse throwError(BusinessServiceException _buEx) {
+    public StandardResponse throwErrorBusiness(BusinessServiceException _buEx) {
         return createErrorResponse(_buEx,  "460", HttpStatus.BAD_REQUEST);
     }
 

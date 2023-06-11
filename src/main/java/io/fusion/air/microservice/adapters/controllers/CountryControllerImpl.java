@@ -16,6 +16,7 @@
 package io.fusion.air.microservice.adapters.controllers;
 
 import io.fusion.air.microservice.domain.entities.example.CountryEntity;
+import io.fusion.air.microservice.domain.exceptions.BusinessServiceException;
 import io.fusion.air.microservice.domain.exceptions.DataNotFoundException;
 import io.fusion.air.microservice.domain.ports.services.CountryReactiveService;
 import io.fusion.air.microservice.server.config.ServiceConfiguration;
@@ -84,7 +85,8 @@ public class CountryControllerImpl extends AbstractController {
 		return countryReactiveService.findByCountryCode(_countryCode)
 				.log("countryReactiveService.findByCountryCode(code)")
 				.flatMap(data -> Mono.just(data))
-				.switchIfEmpty(Mono.error(new DataNotFoundException("Data not found for > "+_countryCode)));
+				.switchIfEmpty(Mono.error(new BusinessServiceException("Data not found for > "+_countryCode)));
+
 	}
 
 	/**
