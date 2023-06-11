@@ -356,6 +356,7 @@ public final class Utils {
 		// Initialize Standard Error Response
 		StandardResponse stdResponse = new StandardResponse();
 		stdResponse.initFailure(servicePrefix + _errorCode, _message);
+		stdResponse.setHttpStatus(_httpStatus);
 		LinkedHashMap<String, Object> payload = new LinkedHashMap<String,Object>();
 
 		// Add Input Errors If Available

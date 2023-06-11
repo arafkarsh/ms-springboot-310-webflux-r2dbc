@@ -15,6 +15,7 @@
  */
 package io.fusion.air.microservice.domain.entities.example;
 
+import io.fusion.air.microservice.utils.Utils;
 import jakarta.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.Id;
@@ -119,7 +120,8 @@ public class CountryEntity implements Serializable {
      * @return
      */
     public String toString() {
-        return countryId + "|" + countryName;
+        // return countryId + "|" + countryName;
+        return Utils.toJsonString(this);
     }
 
     /**

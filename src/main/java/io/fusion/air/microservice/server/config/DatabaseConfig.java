@@ -15,9 +15,11 @@
  */
 package io.fusion.air.microservice.server.config;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.r2dbc.ConnectionFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -27,12 +29,14 @@ import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 // REACTIVE IMPORTS
-
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.Option;
 import static io.r2dbc.spi.ConnectionFactoryOptions.*;
+import static java.lang.invoke.MethodHandles.lookup;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import org.springframework.r2dbc.connection.R2dbcTransactionManager;
 import org.springframework.transaction.ReactiveTransactionManager;
 
@@ -47,6 +51,9 @@ import org.springframework.transaction.ReactiveTransactionManager;
 @EnableTransactionManagement
 public class DatabaseConfig {
 
+    // Set Logger -> Lookup will automatically determine the class name.
+    private static final Logger log = getLogger(lookup().lookupClass());
+
     @Autowired
     private ServiceConfiguration serviceConfig;
 
@@ -57,9 +64,11 @@ public class DatabaseConfig {
     public ConnectionFactory connectionFactory() {
         switch(serviceConfig.getDataSourceVendor()) {
             case ServiceConfiguration.DB_H2:
+                log.info("Creating H2 Database.... 1/3");
                 // For H2 Database
                 return getH2ConnectionFactory();
             case ServiceConfiguration.DB_POSTGRESQL:
+                log.info("Creating PostgreSQL Database.... 1/3");
                 // For PostgreSQL Database
                 return getPostgreSQLConnectionFactory();
         }
@@ -75,22 +84,38 @@ public class DatabaseConfig {
     @Bean
     @Qualifier("reactiveTransactionManager")
     public ReactiveTransactionManager reactiveTransactionManager(ConnectionFactory connectionFactory) {
+        log.info("Creating R2DBC TxManager .... 3/3");
         return new R2dbcTransactionManager(connectionFactory);
     }
-
 
     /**
      * Create H2 Connection Factory
      * @return
      */
     private ConnectionFactory getH2ConnectionFactory() {
+        log.info("Creating H2 Database.... 2/2");
+        ConnectionFactoryOptions options = ConnectionFactoryOptions.builder()
+                .option(DRIVER, "h2")
+                .option(PROTOCOL, "mem")
+                .option(HOST, "localhost")
+                .option(PORT, 5432)
+                .option(DATABASE, "ms_cache")
+                .option(USER, "sa")
+                .option(PASSWORD, "password")
+                .build();
+        ConnectionFactory connectionFactory = ConnectionFactories.get(options);
+        return ConnectionFactoryBuilder.withOptions(options.mutate()).build();
+        /**
         return ConnectionFactories.get(ConnectionFactoryOptions.builder()
                 .option(DRIVER, "h2")
                 .option(PROTOCOL, "mem")
-                .option(DATABASE, "ms-cache")
+                .option(HOST, "localhost")
+                .option(PORT, 5432)
+                .option(DATABASE, "ms_cache")
                 .option(USER, "sa")
-                .option(PASSWORD, "")
+                .option(PASSWORD, "password")
                 .build());
+         */
     }
 
     /**
@@ -98,14 +123,17 @@ public class DatabaseConfig {
      * @return
      */
     private ConnectionFactory getPostgreSQLConnectionFactory() {
-        return ConnectionFactories.get(ConnectionFactoryOptions.builder()
+        log.info("Creating PostgreSQL Database.... 2/2");
+        ConnectionFactoryOptions options = ConnectionFactoryOptions.builder()
                 .option(DRIVER, "postgresql")
                 .option(HOST, "localhost")
                 .option(PORT, 5433)
                 .option(DATABASE, "ms_cache")
                 .option(USER, "postgres")
                 .option(PASSWORD, "")
-                .build());
+                .build();
+        ConnectionFactory connectionFactory = ConnectionFactories.get(options);
+        return ConnectionFactoryBuilder.withOptions(options.mutate()).build();
     }
 
     // =================================================================================================================
@@ -116,14 +144,18 @@ public class DatabaseConfig {
      * @param connectionFactory
      * @return
      */
+    /**
     @Bean
-    ConnectionFactoryInitializer initializer(ConnectionFactory connectionFactory) {
+    public ConnectionFactoryInitializer initializer(ConnectionFactory connectionFactory) {
 
+       //  log.info("Creating Db Initializer with WebFlux Data .... 1/2");
         ConnectionFactoryInitializer initializer = new ConnectionFactoryInitializer();
         initializer.setConnectionFactory(connectionFactory);
+        // initializer.setDatabasePopulator(new ResourceDatabasePopulator(new ClassPathResource("schema.sql")));
         initializer.setDatabasePopulator(new ResourceDatabasePopulator(new ClassPathResource("ms-webflux-h2.sql")));
-
+        // log.info("Creating Db Initializer with WebFlux Data .... 2/2");
         return initializer;
     }
+    */
 
 }

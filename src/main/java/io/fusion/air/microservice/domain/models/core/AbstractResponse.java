@@ -15,10 +15,12 @@
  */
 package io.fusion.air.microservice.domain.models.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.fusion.air.microservice.utils.DateJsonSerializer;
+import org.springframework.http.HttpStatus;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -47,6 +49,9 @@ public abstract class AbstractResponse implements Serializable {
 
    @JsonProperty("payload")
     private Object payload = null;
+
+   @JsonIgnore
+   private HttpStatus httpStatus;
 
     /**
      * Initialize for Failure Response
@@ -78,6 +83,22 @@ public abstract class AbstractResponse implements Serializable {
         description = _desc;
         payload     = new ArrayList<Object>();
         return this;
+    }
+
+    /**
+     * Set HTTP Status Code
+     * @param _status
+     */
+    public void setHttpStatus(HttpStatus _status) {
+        httpStatus = _status;
+    }
+
+    /**
+     * Returns HttpStatus
+     * @return
+     */
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
     }
 
     /**
