@@ -15,7 +15,6 @@
  */
 package io.fusion.air.microservice;
 
-import io.fusion.air.microservice.adapters.aop.ExceptionHandlerAdvice;
 import io.fusion.air.microservice.server.config.ServiceConfiguration;
 import io.fusion.air.microservice.server.controllers.HealthController;
 

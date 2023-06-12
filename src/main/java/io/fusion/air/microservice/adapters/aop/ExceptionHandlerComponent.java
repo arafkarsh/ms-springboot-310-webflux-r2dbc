@@ -50,7 +50,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Component
 // -2 is used to give precedence to this handler over the default webflux exception handlers.
 @Order(-2)
-public class ExceptionHandlerAdvice implements ErrorWebExceptionHandler {
+public class ExceptionHandlerComponent implements ErrorWebExceptionHandler {
 
     // Set Logger -> Lookup will automatically determine the class name.
     private static final Logger log = getLogger(lookup().lookupClass());
@@ -146,8 +146,6 @@ public class ExceptionHandlerAdvice implements ErrorWebExceptionHandler {
             stdResponse = throwError((InputDataException)ex);
         } else if(ex instanceof MandatoryDataRequiredException) {
             stdResponse = throwError((MandatoryDataRequiredException)ex);
-        } else if(ex instanceof ResourceException) {
-            stdResponse = throwError((ResourceException)ex);
         } else if(ex instanceof ControllerException) {
             stdResponse = throwError((ControllerException)ex);
         } else if (ex instanceof RuntimeException) {
@@ -366,7 +364,7 @@ public class ExceptionHandlerAdvice implements ErrorWebExceptionHandler {
      */
     private void logException(String _status, Throwable e) {
         log.info(getStackTraceAsString(e));
-        log.info("2|EH|TIME=00|STATUS=Error: {}|CLASS={}|",_status, e.toString());
+        log.info("2|EH|TIME=00|STATUS=ERROR: {}|CLASS={}|",_status, e.toString());
     }
 
     /**
