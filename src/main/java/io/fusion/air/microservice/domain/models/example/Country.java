@@ -13,15 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.fusion.air.microservice.domain.entities.example;
+package io.fusion.air.microservice.domain.models.example;
 
-import io.fusion.air.microservice.domain.models.example.Country;
 import io.fusion.air.microservice.utils.Utils;
 import jakarta.validation.constraints.NotNull;
-
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -32,39 +27,24 @@ import java.util.Objects;
  * @version:
  * @date:
  */
-@Table("country_t")
-public class CountryEntity implements Serializable {
+public class Country implements Serializable {
 
-    @Id
-    @Column("cid")
+    @NotNull
     private int cid;
 
     @NotNull
-    @Column("countryId")
     private int countryId;
 
     @NotNull
-    @Column("countryCode")
     private String countryCode;
 
     @NotNull
-    @Column("countryName")
     private String countryName;
 
-    @Column("countryOfficialName")
+    @NotNull
     private String countryOfficialName;
 
-    protected CountryEntity() {
-    }
-
-    /**
-     * Create Country
-     *
-     * @param country
-     */
-    public CountryEntity(Country country) {
-        this(country.getCid(), country.getCountryId(), country.getCountryCode(),
-                country.getCountryName(), country.getCountryOfficialName());
+    protected Country() {
     }
 
     /**
@@ -75,8 +55,7 @@ public class CountryEntity implements Serializable {
      * @param _countryOnm
      * @param _countryCd
      */
-    public CountryEntity(int _cid, int _pid, String _countryNm, String _countryOnm, String _countryCd) {
-        cid = _cid;
+    public Country(int _pid, String _countryNm, String _countryOnm, String _countryCd) {
         countryId = _pid;
         countryName = _countryNm;
         countryOfficialName = _countryOnm;
@@ -84,7 +63,7 @@ public class CountryEntity implements Serializable {
     }
 
     /**
-     * Returns the Country ID
+     * Returns the Country ID - Primary Key
      * @return
      */
     public int getCid() {
@@ -92,7 +71,7 @@ public class CountryEntity implements Serializable {
     }
 
     /**
-     * Get Country Code
+     * Get Country Code - ISO
      *
      * @return
      */
@@ -101,7 +80,7 @@ public class CountryEntity implements Serializable {
     }
 
     /**
-     * Get Country ID
+     * Get Country ID - ISO
      *
      * @return
      */
@@ -158,8 +137,7 @@ public class CountryEntity implements Serializable {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        CountryEntity countryEntity = (CountryEntity) o;
-        return countryId == countryEntity.countryId && countryName.equals(countryEntity.countryName);
+        Country country = (Country) o;
+        return countryId == country.countryId && countryName.equals(country.countryName);
     }
-
 }

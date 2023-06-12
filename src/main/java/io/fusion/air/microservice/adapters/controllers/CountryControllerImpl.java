@@ -18,6 +18,7 @@ package io.fusion.air.microservice.adapters.controllers;
 import io.fusion.air.microservice.domain.entities.example.CountryEntity;
 import io.fusion.air.microservice.domain.exceptions.BusinessServiceException;
 import io.fusion.air.microservice.domain.exceptions.DataNotFoundException;
+import io.fusion.air.microservice.domain.models.example.Country;
 import io.fusion.air.microservice.domain.ports.services.CountryReactiveService;
 import io.fusion.air.microservice.server.config.ServiceConfiguration;
 import io.fusion.air.microservice.server.controllers.AbstractController;
@@ -26,6 +27,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -157,6 +159,26 @@ public class CountryControllerImpl extends AbstractController {
 				.delayElements(Duration.ofSeconds(3))
 				.switchIfEmpty(Mono.error(new DataNotFoundException("No countries found!")));
 
+	}
+
+	/**
+	 * POST Method Call to Save the Country
+	 *
+	 * @return
+	 */
+	@Operation(summary = "Save the Country")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200",
+					description = "Save the Country",
+					content = {@Content(mediaType = "application/json")}),
+			@ApiResponse(responseCode = "400",
+					description = "Unable to save the Country!",
+					content = @Content)
+	})
+	@PostMapping(path = "/", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	public Mono<CountryEntity> saveCountry(@Valid @RequestBody Country country) throws Exception {
+		log.info("|"+name()+"|Request to Save the Country ... ");
+		return countryReactiveService.save(country);
 	}
 
  }

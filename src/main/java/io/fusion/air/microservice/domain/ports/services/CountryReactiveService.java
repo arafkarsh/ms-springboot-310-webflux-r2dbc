@@ -16,6 +16,7 @@
 package io.fusion.air.microservice.domain.ports.services;
 
 import io.fusion.air.microservice.domain.entities.example.CountryEntity;
+import io.fusion.air.microservice.domain.models.example.Country;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -26,11 +27,18 @@ import reactor.core.publisher.Mono;
  */
 public interface CountryReactiveService {
 
+
     /**
      * Save the Country
      * @param country
      */
-    public void save(CountryEntity country);
+    public  Mono<CountryEntity> save(Country country);
+
+    /**
+     * Save the Country
+     * @param country
+     */
+    public  Mono<CountryEntity> save(CountryEntity country);
 
     public Flux<CountryEntity> findAll();
 

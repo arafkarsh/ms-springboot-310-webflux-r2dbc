@@ -17,6 +17,7 @@ package io.fusion.air.microservice.adapters.service;
 
 import io.fusion.air.microservice.adapters.repository.CountryRepository;
 import io.fusion.air.microservice.domain.entities.example.CountryEntity;
+import io.fusion.air.microservice.domain.models.example.Country;
 import io.fusion.air.microservice.domain.ports.services.CountryReactiveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,8 +41,18 @@ public class CountryReactiveServiceImpl implements CountryReactiveService {
      * @param country
      */
     @Override
-    public void save(CountryEntity country) {
-            countryRepository.save(country);
+    public Mono<CountryEntity> save(Country country) {
+        return countryRepository.save(new CountryEntity(country));
+    }
+
+    /**
+     * Save the Country
+     *
+     * @param country
+     */
+    @Override
+    public  Mono<CountryEntity> save(CountryEntity country) {
+           return countryRepository.save(country);
     }
 
     @Override
