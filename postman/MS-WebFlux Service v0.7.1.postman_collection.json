@@ -1,0 +1,282 @@
+{
+	"info": {
+		"_postman_id": "07d6422e-4519-4b75-9f28-932af20b805d",
+		"name": "MS-WebFlux Service v0.7.1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4414585",
+		"_collection_link": "https://fusion-amexio.postman.co/workspace/Fusion-Workspace~72c2b47e-5c3b-4d72-b39b-15a0ac062747/collection/4414585-07d6422e-4519-4b75-9f28-932af20b805d?action=share&creator=4414585&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "Cart / Customer / All",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9092/ms-webflux/api/v1/cart/customer/123",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9092",
+							"path": [
+								"ms-webflux",
+								"api",
+								"v1",
+								"cart",
+								"customer",
+								"123"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Country",
+			"item": [
+				{
+					"name": "Country / All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9092/ms-webflux/api/v1/country/all/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9092",
+							"path": [
+								"ms-webflux",
+								"api",
+								"v1",
+								"country",
+								"all",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Country / Code",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9092/ms-webflux/api/v1/country/code/ARG",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9092",
+							"path": [
+								"ms-webflux",
+								"api",
+								"v1",
+								"country",
+								"code",
+								"ARG"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "http://localhost:9092/ms-webflux/api/v1/country/id/1",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9092/ms-webflux/api/v1/country/code/ARG1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9092",
+									"path": [
+										"ms-webflux",
+										"api",
+										"v1",
+										"country",
+										"code",
+										"ARG1"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "no-referrer"
+								},
+								{
+									"key": "content-length",
+									"value": "207"
+								}
+							],
+							"cookie": [],
+							"body": "{\"time\":\"2023-06-12T08:14:10.739744\",\"success\":false,\"code\":\"13460\",\"msg\":\"Data not found for > ARG1\",\"payload\":[{\"errors\":{\"code\":400,\"mesg\":\"BAD_REQUEST\",\"srv\":null,\"reqId\":null,\"http\":null,\"path\":null}}]}"
+						},
+						{
+							"name": "http://localhost:9092/ms-webflux/api/v1/country/id/1",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9092/ms-webflux/api/v1/country/code/ARG",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9092",
+									"path": [
+										"ms-webflux",
+										"api",
+										"v1",
+										"country",
+										"code",
+										"ARG"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "114"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "no-referrer"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"cid\": 16,\n    \"countryId\": 32,\n    \"countryCode\": \"ARG\",\n    \"countryName\": \"Argentina\",\n    \"countryOfficialName\": \"Argentine Republic\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Country / ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9092/ms-webflux/api/v1/country/id/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9092",
+							"path": [
+								"ms-webflux",
+								"api",
+								"v1",
+								"country",
+								"id",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Country / All / Delay",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9092/ms-webflux/api/v1/country/all/delay",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9092",
+							"path": [
+								"ms-webflux",
+								"api",
+								"v1",
+								"country",
+								"all",
+								"delay"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
