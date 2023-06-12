@@ -17,12 +17,17 @@ package io.fusion.air.microservice.adapters.service;
 
 import io.fusion.air.microservice.adapters.repository.CountryRepository;
 import io.fusion.air.microservice.domain.entities.example.CountryEntity;
+import io.fusion.air.microservice.domain.exceptions.DatabaseException;
 import io.fusion.air.microservice.domain.models.example.Country;
 import io.fusion.air.microservice.domain.ports.services.CountryReactiveService;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import static java.lang.invoke.MethodHandles.lookup;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * @author: Araf Karsh Hamid
@@ -31,6 +36,9 @@ import reactor.core.publisher.Mono;
  */
 @Service
 public class CountryReactiveServiceImpl implements CountryReactiveService {
+
+    // Set Logger -> Lookup will automatically determine the class name.
+    private static final Logger log = getLogger(lookup().lookupClass());
 
     @Autowired
     private CountryRepository countryRepository;
@@ -68,7 +76,11 @@ public class CountryReactiveServiceImpl implements CountryReactiveService {
      */
     @Override
     public Mono<CountryEntity> findByCountryCode(String code) {
-        return countryRepository.findByCountryCode(code);
+        return countryRepository.findByCountryCode(code)
+                .onErrorResume(e -> {
+                    log.error("Database ERROR:", e);
+                    return Mono.error(new DatabaseException("Failed to fetch data! "+e.getMessage(), e));
+                });
     }
 
     /**
