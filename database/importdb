@@ -1,2 +1,2 @@
 #psql  -h localhost -p 5433 ms_cache < ms-webflux.sql
-psql  -h localhost -p 5433 ms_cache < ms-webflux-pg-pub.sql
+psql  -h localhost -p 5433 ms_cache < ms-webflux-pg-pub-v2.sql
