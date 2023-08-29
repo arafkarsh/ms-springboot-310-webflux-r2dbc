@@ -358,21 +358,10 @@ public final class Utils {
 		stdResponse.initFailure(servicePrefix + _errorCode, _message);
 		stdResponse.setHttpStatus(_httpStatus);
 		LinkedHashMap<String, Object> payload = new LinkedHashMap<String,Object>();
-
 		// Add Input Errors If Available
 		if(_inputErrors != null) {
 			payload.put("input", _inputErrors);
 		}
-
-		// Add Error Details
-		LinkedHashMap<String,Object> errorData = new LinkedHashMap<String,Object>();
-		errorData.put("code", _httpStatus.value());
-		errorData.put("mesg", _httpStatus.name());
-		errorData.put("srv", MDC.get("Service"));
-		errorData.put("reqId", MDC.get("ReqId"));
-		errorData.put("http", MDC.get("Protocol"));
-		errorData.put("path", MDC.get("URI"));
-		payload.put("errors", errorData);
 		stdResponse.setPayload(payload);
 
 		return stdResponse;

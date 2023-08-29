@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -156,5 +157,13 @@ public abstract class AbstractResponse implements Serializable {
      */
     public Object getPayload() {
         return payload;
+    }
+
+    @JsonIgnore
+    public LinkedHashMap<String, Object> getErrorPayload() {
+        if(payload != null && payload instanceof LinkedHashMap _map) {
+            return _map;
+        }
+        return new LinkedHashMap<String, Object>();
     }
 }

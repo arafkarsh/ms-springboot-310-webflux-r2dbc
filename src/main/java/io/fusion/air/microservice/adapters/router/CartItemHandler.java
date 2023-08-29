@@ -32,11 +32,12 @@ public class CartItemHandler {
     private CartReactiveService cartReactiveService;
 
     public Mono<ServerResponse> getCart(ServerRequest request) {
-        log.info("Inside Handler - getCart()  .... !<><><><><><<<<<< <<<< <<< <<< ");
+        log.info("Inside Handler - getCart() ");
         String customerId = request.pathVariable("customerId");
         // UUID cartId = UUID.fromString(request.pathVariable("cardId"));
-        return cartReactiveService.findByCustomerId(customerId)
-                .collectList() // convert the Flux<Cart> to Mono<List<Cart>>
+        return cartReactiveService
+                .findByCustomerId(customerId)                               // Find the Cart by Customer ID
+                .collectList()                                             // convert the Flux<Cart> to Mono<List<Cart>>
                 .flatMap(carts -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(fromValue(carts)))

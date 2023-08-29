@@ -15,18 +15,22 @@
  */
 package io.fusion.air.microservice.adapters.aop;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.fusion.air.microservice.domain.exceptions.*;
 import io.fusion.air.microservice.domain.exceptions.SecurityException;
 import io.fusion.air.microservice.domain.models.core.StandardResponse;
 import io.fusion.air.microservice.server.config.ServiceConfiguration;
+import io.fusion.air.microservice.server.models.RequestMap;
 import io.fusion.air.microservice.utils.Utils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.access.AccessDeniedException;
@@ -38,6 +42,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.LinkedHashMap;
 
 import static java.lang.invoke.MethodHandles.lookup;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -58,8 +63,125 @@ public class ExceptionHandlerComponent implements ErrorWebExceptionHandler {
     // ServiceConfiguration
     @Autowired
     private ServiceConfiguration serviceConfig;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    /**
+     * Handles All the exceptions and Creates Standard Response with Context Specific Error Codes
+     *
+     * @param exchange
+     * @param ex
+     * @return
+     */
+    @Override
+    public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
+        ServerHttpRequest request = exchange.getRequest();
+        ServerHttpResponse response = exchange.getResponse();
+
+        // Set the content type to application/json
+        response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        // Get the Request Context
+        RequestMap requestContext = exchange.getAttributeOrDefault("requestContext", new RequestMap());
+        // Get the Error Response
+        StandardResponse stdResponse = getStandardResponse(ex);
+        requestContext.addHttpCode( stdResponse.getHttpStatus().value());
+        requestContext.addHttpMessage( stdResponse.getHttpStatus().name());
+        LinkedHashMap<String, Object> payload = new LinkedHashMap<String,Object>();
+        payload.put("error", requestContext);
+        // stdResponse.getErrorPayload().put("error", requestContext);
+        stdResponse.setPayload(payload);
+
+        response.setStatusCode(stdResponse.getHttpStatus());
+        try {
+            byte[] bytes = objectMapper.writeValueAsBytes(stdResponse);
+            DataBuffer buffer = response.bufferFactory().wrap(bytes);
+            return response.writeWith(Mono.just(buffer));
+        } catch (Exception e) {
+            return Mono.error(e);
+        }
+
+    }
+
+    /**
+     * Returns the Standard Response based on the Exception Type
+     * @param ex
+     * @return
+     */
+    private StandardResponse getStandardResponse(Throwable ex) {
+        StandardResponse stdResponse = null;
+        if(ex instanceof AccessDeniedException _tex) {
+            stdResponse = throwError(_tex);
+        } else if(ex instanceof RequestRejectedException _tex) {
+            stdResponse = throwError(_tex);
+        } else if(ex instanceof ResourceNotFoundException _tex) {
+            stdResponse = throwError(_tex);
+        } else if(ex instanceof ResourceException _tex) {
+            stdResponse = throwError(_tex);
+        } else if(ex instanceof AuthorizationException _tex) {
+            stdResponse = throwError(_tex);
+        } else if(ex instanceof JWTTokenExtractionException _tex) {
+            stdResponse = throwError(_tex);
+        } else if(ex instanceof JWTTokenExpiredException _tex) {
+            stdResponse = throwError(_tex);
+        } else if(ex instanceof JWTTokenSubjectException _tex) {
+            stdResponse = throwError(_tex);
+        } else if(ex instanceof JWTUnDefinedException _tex) {
+            stdResponse = throwError(_tex);
+        } else if(ex instanceof SecurityException _tex) {
+            stdResponse = throwErrorSecurity(_tex);
+        } else if(ex instanceof UnableToSaveException _tex) {
+            stdResponse = throwError(_tex);
+        } else if(ex instanceof DataNotFoundException _tex) {
+            stdResponse = throwError(_tex);
+        } else if(ex instanceof DatabaseException _tex) {
+            stdResponse = throwErrorDatabase(_tex);
+        } else if(ex instanceof MessagingException _tex) {
+            stdResponse = throwErrorMessaging(_tex);
+        } else if(ex instanceof InputDataException _tex) {
+            stdResponse = throwError(_tex);
+        } else if(ex instanceof MandatoryDataRequiredException _tex) {
+            stdResponse = throwError(_tex);
+        } else if(ex instanceof BusinessServiceException _tex) {
+            stdResponse = throwErrorBusiness(_tex);
+        } else if(ex instanceof ControllerException _tex) {
+            stdResponse = throwErrorController(_tex);
+        } else if(ex instanceof AbstractServiceException _tex) {
+            stdResponse = throwErrorAbstractException(_tex);
+        } else if (ex instanceof RuntimeException _tex) {
+            stdResponse = throwErrorRuntime(_tex);
+        } else {
+            stdResponse = throwErrorThrowable(ex);
+        }
+        return stdResponse;
+    }
+
+    /**
+     * Returns the Standard Response based on the Exception Type
+     * @param ex
+     * @return
+     */
+    /**
+    private StandardResponse getStandardResponse2(Throwable ex) {
+        StandardResponse stdResponse = null;
+        if(ex instanceof AccessDeniedException _tex) {
+            stdResponse = throwError(_tex);
+        } else if(ex instanceof ControllerException _tex) {
+            stdResponse = throwErrorController(_tex);
+        } else if(ex instanceof BusinessServiceException _tex) {
+            stdResponse = throwErrorBusiness(_tex);
+        } else if(ex instanceof DatabaseException _tex) {
+            stdResponse = throwErrorDatabase(_tex);
+        } else if(ex instanceof MessagingException _tex) {
+            stdResponse = throwErrorMessaging(_tex);
+        } else if(ex instanceof AbstractServiceException _tex) {
+            stdResponse = throwErrorAbstractException(_tex);
+        } else if (ex instanceof RuntimeException _tex) {
+            stdResponse = throwErrorRuntime(_tex);
+        } else {
+            stdResponse = throwErrorThrowable(ex);
+        }
+        return stdResponse;
+    }
+     */
 
     /**
      * Create Standard Error Response
@@ -74,8 +196,7 @@ public class ExceptionHandlerComponent implements ErrorWebExceptionHandler {
         String errorPrefix = (serviceConfig != null) ? serviceConfig.getServiceAPIErrorPrefix() : "AK";
         String errorCode = errorPrefix+_errorCode;
         String message = _exception.getMessage();
-        if(_exception instanceof AbstractServiceException) {
-            AbstractServiceException ase = (AbstractServiceException)_exception;
+        if(_exception instanceof AbstractServiceException ase) {
             ase.setErrorCode(errorCode);
         }
         logException(errorCode,  _exception);
@@ -83,77 +204,11 @@ public class ExceptionHandlerComponent implements ErrorWebExceptionHandler {
         return stdResponse;
     }
 
-    /**
-     * Handles All the exceptions and Creates Standard Response with Context Specific Error Codes
-     *
-     * @param exchange
-     * @param ex
-     * @return
-     */
-    @Override
-    public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
-        ServerHttpRequest request = exchange.getRequest();
-        ServerHttpResponse response = exchange.getResponse();
-
-        StandardResponse stdResponse = getStandardResponse(ex);
-        response.setStatusCode(stdResponse.getHttpStatus());
-
-        try {
-            byte[] bytes = objectMapper.writeValueAsBytes(stdResponse);
-            DataBuffer buffer = response.bufferFactory().wrap(bytes);
-            return response.writeWith(Mono.just(buffer));
-        } catch (Exception e) {
-            return Mono.error(e);
-        }
-    }
-
-    /**
-     * Returns the Standard Response based on the Exception Type
-     * @param ex
-     * @return
-     */
-    private StandardResponse getStandardResponse(Throwable ex) {
-        StandardResponse stdResponse = null;
-        if(ex instanceof AccessDeniedException) {
-            stdResponse = throwError((AccessDeniedException) ex);
-        } else if(ex instanceof RequestRejectedException) {
-            stdResponse = throwError((RequestRejectedException)ex);
-        } else if(ex instanceof ResourceException) {
-            stdResponse = throwError((ResourceException)ex);
-        } else if(ex instanceof ResourceNotFoundException) {
-            stdResponse = throwError((ResourceNotFoundException)ex);
-        } else if(ex instanceof AuthorizationException) {
-            stdResponse = throwError((AuthorizationException)ex);
-        } else if(ex instanceof JWTTokenExtractionException) {
-            stdResponse = throwError((JWTTokenExtractionException)ex);
-        } else if(ex instanceof JWTTokenExpiredException) {
-            stdResponse = throwError((JWTTokenExpiredException)ex);
-        } else if(ex instanceof JWTTokenSubjectException) {
-            stdResponse = throwError((JWTTokenSubjectException)ex);
-        } else if(ex instanceof JWTUnDefinedException) {
-            stdResponse = throwError((JWTUnDefinedException)ex);
-        } else if(ex instanceof MessagingException) {
-            stdResponse = throwError((MessagingException)ex);
-        } else if(ex instanceof UnableToSaveException) {
-            stdResponse = throwError((UnableToSaveException)ex);
-        } else if(ex instanceof DataNotFoundException) {
-            stdResponse = throwError((DataNotFoundException)ex);
-        } else if(ex instanceof DatabaseException) {
-             stdResponse = throwErrorDatabase((DatabaseException)ex);
-        } else if(ex instanceof BusinessServiceException) {
-             stdResponse = throwErrorBusiness((BusinessServiceException)ex);
-        } else if(ex instanceof InputDataException) {
-            stdResponse = throwError((InputDataException)ex);
-        } else if(ex instanceof MandatoryDataRequiredException) {
-            stdResponse = throwError((MandatoryDataRequiredException)ex);
-        } else if(ex instanceof ControllerException) {
-            stdResponse = throwError((ControllerException)ex);
-        } else if (ex instanceof RuntimeException) {
-            stdResponse = throwErrorRuntime((RuntimeException)ex);
-        } else {
-            stdResponse = throwErrorThrowable(ex);
-        }
-        return stdResponse;
+    public Mono<RequestMap> getRequestMap() {
+        return Mono.deferContextual(ctx -> {
+            RequestMap requestContext = ctx.get("requestContext");
+            return Mono.just(requestContext);
+        });
     }
 
     // ================================================================================================================
@@ -219,6 +274,14 @@ public class ExceptionHandlerComponent implements ErrorWebExceptionHandler {
     }
 
     // ================================================================================================================
+    // Abstract EXCEPTIONS: ERROR CODES 410 - 599
+    // ================================================================================================================
+
+    public  StandardResponse throwErrorAbstractException(AbstractServiceException _adEx) {
+        return createErrorResponse(_adEx,  "599",  HttpStatus.BAD_REQUEST);
+    }
+
+    // ================================================================================================================
     // SECURITY EXCEPTIONS: ERROR CODES 410 - 429
     // ================================================================================================================
     /**
@@ -226,8 +289,8 @@ public class ExceptionHandlerComponent implements ErrorWebExceptionHandler {
      * @param _adEx
      * @return
      */
-    public  StandardResponse throwError(SecurityException _adEx) {
-        return createErrorResponse(_adEx,  "411",  HttpStatus.UNAUTHORIZED);
+    public  StandardResponse throwErrorSecurity(SecurityException _adEx) {
+        return createErrorResponse(_adEx,  "413",  HttpStatus.UNAUTHORIZED);
     }
 
     /**
@@ -236,7 +299,7 @@ public class ExceptionHandlerComponent implements ErrorWebExceptionHandler {
      * @return
      */
     public  StandardResponse throwError(AuthorizationException _adEx) {
-        return createErrorResponse(_adEx,  "413",  HttpStatus.UNAUTHORIZED);
+        return createErrorResponse(_adEx,  "411",  HttpStatus.UNAUTHORIZED);
     }
 
     /**
@@ -283,7 +346,7 @@ public class ExceptionHandlerComponent implements ErrorWebExceptionHandler {
      * @param _msgEx
      * @return
      */
-    public StandardResponse throwError(MessagingException _msgEx) {
+    public StandardResponse throwErrorMessaging(MessagingException _msgEx) {
         return createErrorResponse(_msgEx,  "430",  HttpStatus.BAD_REQUEST);
     }
 
@@ -350,7 +413,7 @@ public class ExceptionHandlerComponent implements ErrorWebExceptionHandler {
      * @param _coEx
      * @return
      */
-    public StandardResponse throwError(ControllerException _coEx) {
+    public StandardResponse throwErrorController(ControllerException _coEx) {
         return createErrorResponse(_coEx,  "490", HttpStatus.BAD_REQUEST);
     }
 

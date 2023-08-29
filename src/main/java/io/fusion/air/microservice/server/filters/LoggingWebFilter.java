@@ -16,6 +16,8 @@
 package io.fusion.air.microservice.server.filters;
 
 import io.fusion.air.microservice.server.config.ServiceConfiguration;
+import io.fusion.air.microservice.server.models.RequestMap;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -46,34 +48,20 @@ public class LoggingWebFilter implements WebFilter {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
 
-        String reqId = UUID.randomUUID().toString();
-        String ip = request.getRemoteAddress().getHostString();
-        String port = String.valueOf(request.getRemoteAddress().getPort());
-        String uri = request.getURI().toString();
-        String protocol = request.getMethod().toString();
-        String user = "john.doe";
-        String name = serviceConfig.getServiceName();
+        RequestMap requestContext = new RequestMap()
+                .addIPAddress(request.getRemoteAddress().getHostString())
+                .addPort(String.valueOf(request.getRemoteAddress().getPort()))
+                .addURI(request.getURI().toString())
+                .addProtocol(request.getMethod().toString())
+                .addService(serviceConfig.getServiceName());
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("ReqId", reqId);
-        params.put("IP", ip);
-        params.put("Port", port);
-        params.put("URI", uri);
-        params.put("Protocol", protocol);
-        params.put("user", user);
-        params.put("Service", name);
+        // Set requestContext as an attribute on the ServerWebExchange
+        exchange.getAttributes().put("requestContext", requestContext);
 
         return chain.filter(exchange)
-                //.subscriberContext(RequestContext.of(params))
+                .contextWrite(Context.of("requestContext", requestContext))
                 .doOnEach(signal -> {
-                    // Here you can do something with the context before the request is finished
-                    //RequestContext context = signal.getContext();
-                    // Log the data from the context
-                })
-                .doFinally(signalType -> {
-                            // Clear the context (if necessary)
-                        }
-                );
+                });
     }
 
 }
