@@ -1,6 +1,8 @@
 package io.fusion.air.microservice.adapters.router;
 
+import io.fusion.air.microservice.domain.models.core.StandardResponse;
 import io.fusion.air.microservice.domain.ports.services.CartReactiveService;
+import io.fusion.air.microservice.server.router.AbstractHandler;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,7 +25,7 @@ import java.util.UUID;
  * @date:
  */
 @Component
-public class CartItemHandler {
+public class CartItemHandler extends AbstractHandler {
 
     // Set Logger -> Lookup will automatically determine the class name.
     private static final Logger log = getLogger(lookup().lookupClass());
@@ -38,9 +40,15 @@ public class CartItemHandler {
         return cartReactiveService
                 .findByCustomerId(customerId)                               // Find the Cart by Customer ID
                 .collectList()                                             // convert the Flux<Cart> to Mono<List<Cart>>
-                .flatMap(carts -> ServerResponse.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(fromValue(carts)))
+                .flatMap(carts -> {
+                    // Create a StandardResponse object
+                    StandardResponse stdResponse = createSuccessResponse("Data Retrieved!");
+                    stdResponse.setPayload(carts); // Set the payload with carts
+
+                    return ServerResponse.ok()
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body(fromValue(stdResponse)); // Set the body with StandardResponse
+                })
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 }

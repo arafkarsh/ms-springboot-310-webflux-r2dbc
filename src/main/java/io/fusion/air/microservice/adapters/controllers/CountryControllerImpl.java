@@ -18,6 +18,9 @@ package io.fusion.air.microservice.adapters.controllers;
 import io.fusion.air.microservice.domain.entities.example.CountryEntity;
 import io.fusion.air.microservice.domain.exceptions.BusinessServiceException;
 import io.fusion.air.microservice.domain.exceptions.DataNotFoundException;
+import io.fusion.air.microservice.domain.exceptions.InputDataException;
+import io.fusion.air.microservice.domain.exceptions.UnableToSaveException;
+import io.fusion.air.microservice.domain.models.core.StandardResponse;
 import io.fusion.air.microservice.domain.models.example.Country;
 import io.fusion.air.microservice.domain.ports.services.CountryReactiveService;
 import io.fusion.air.microservice.server.config.ServiceConfiguration;
@@ -82,11 +85,15 @@ public class CountryControllerImpl extends AbstractController {
             content = @Content)
     })
 	@GetMapping("/code/{countryCode}")
-	public Mono<CountryEntity> getCountryByCode(@PathVariable("countryCode") String _countryCode)throws Exception {
+	public Mono<StandardResponse> getCountryByCode(@PathVariable("countryCode") String _countryCode)throws Exception {
 		log.info("|"+name()+"|Request to Get Country By Code for > "+_countryCode);
 		return countryReactiveService.findByCountryCode(_countryCode)
 				.log("countryReactiveService.findByCountryCode(code)")
-				.flatMap(data -> Mono.just(data))
+				.flatMap(data -> {
+					StandardResponse stdResponse = createSuccessResponse("Data Fetch Success!");
+					stdResponse.setPayload(data);
+					return Mono.just(stdResponse);
+				})
 				.switchIfEmpty(Mono.error(new BusinessServiceException("Data not found for > "+_countryCode)));
 
 	}
@@ -106,11 +113,15 @@ public class CountryControllerImpl extends AbstractController {
 					content = @Content)
 	})
 	@GetMapping("/id/{countryId}")
-	public Mono<CountryEntity> getCountryById(@PathVariable("countryId") String _countryId)throws Exception {
+	public Mono<StandardResponse> getCountryById(@PathVariable("countryId") String _countryId)throws Exception {
 		log.info("|"+name()+"|Request to Get Country By ID for > "+_countryId);
 		return countryReactiveService.findByCountryId(_countryId)
 				.log("countryReactiveService.findByCountryId(id)")
-				.flatMap(data -> Mono.just(data))
+				.flatMap(data -> {
+					StandardResponse stdResponse = createSuccessResponse("Data Fetch Success!");
+					stdResponse.setPayload(data);
+					return Mono.just(stdResponse);
+				})
 				.switchIfEmpty(Mono.error(new DataNotFoundException("Data not found for > "+_countryId)));
 	}
 
@@ -175,10 +186,20 @@ public class CountryControllerImpl extends AbstractController {
 					description = "Unable to save the Country!",
 					content = @Content)
 	})
-	@PostMapping(path = "/", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public Mono<CountryEntity> saveCountry(@Valid @RequestBody Country country) throws Exception {
+	@PostMapping(path = "/")
+	public Mono<StandardResponse> saveCountry(@Valid @RequestBody Country country) throws Exception {
 		log.info("|"+name()+"|Request to Save the Country ... ");
-		return countryReactiveService.save(country);
+		if(country != null) {
+			return countryReactiveService.save(country)
+					.log("countryReactiveService.save(country)")
+					.flatMap(data -> {
+						StandardResponse stdResponse = createSuccessResponse("Data Save Success!");
+						stdResponse.setPayload(data);
+						return Mono.just(stdResponse);
+					})
+					.switchIfEmpty(Mono.error(new UnableToSaveException("Unable to save data! ")));
+		}
+		throw new InputDataException("Invalid Input Data!");
 	}
 
  }

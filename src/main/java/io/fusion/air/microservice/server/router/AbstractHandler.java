@@ -1,5 +1,5 @@
 /**
- * (C) Copyright 2021 Araf Karsh Hamid 
+ * (C) Copyright 2023 Araf Karsh Hamid
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.fusion.air.microservice.server.controllers;
+package io.fusion.air.microservice.server.router;
 
 import io.fusion.air.microservice.adapters.security.ClaimsManager;
 import io.fusion.air.microservice.domain.models.core.StandardResponse;
@@ -26,14 +26,14 @@ import static java.lang.invoke.MethodHandles.lookup;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * Abstract Controller for the Service
+ * Abstract Handler for the Reactive Service
  * All Other Controllers can extend from this Base Controller which sets the URL base
  * 
  * @author arafkarsh
  * @version 1.0
  * 
  */
-public abstract class AbstractController {
+public abstract class AbstractHandler {
 
 	// Set Logger -> Lookup will automatically determine the class name.
 	public static final Logger log = getLogger(lookup().lookupClass());
