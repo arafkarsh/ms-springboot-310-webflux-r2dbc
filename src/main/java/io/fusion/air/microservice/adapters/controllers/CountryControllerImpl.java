@@ -169,12 +169,12 @@ public class CountryControllerImpl extends AbstractController {
 			.log("countryReactiveService.findAll()")
 			// Delay by 3 seconds for every record to demo SSE - Server Side Events
 			.delayElements(Duration.ofSeconds(3))
-				.flatMap(countryEntity -> {
-					if (Math.random() < 0.05) {  // 5% chance of throwing an exception
-						return Mono.error(new BusinessServiceException("Random error occurred"));
-					}
-					return Mono.just(countryEntity);
-				})
+			.flatMap(countryEntity -> {
+				if (Math.random() < 0.05) {  // 5% chance of throwing an exception
+					return Mono.error(new BusinessServiceException("Random error occurred"));
+				}
+				return Mono.just(countryEntity);
+			})
 			.switchIfEmpty(Mono.error(new DataNotFoundException("No countries found!")));
 	}
 
