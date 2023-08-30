@@ -73,7 +73,7 @@ public class CartItemRouter {
             //... similarly for other routes
     })
     public RouterFunction<ServerResponse> route(CartItemHandler cartItemHandler) {
-        log.info("Inside Router .... Getting all the Route Mappings for Cart <<<< <<< <<< ");
+        log.info("Get All Cart details...  ");
         return RouterFunctions
                 .route(GET(path+"/cart/customer/{customerId}"), cartItemHandler::getCart);
     }
