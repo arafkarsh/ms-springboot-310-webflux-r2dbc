@@ -54,6 +54,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 // Cache
 import org.springframework.web.reactive.config.EnableWebFlux;
+import reactor.tools.agent.ReactorDebugAgent;
+
 
 /**
  * Micro Service - Spring Boot WebFlux Reactive Application
@@ -107,6 +109,8 @@ public class ServiceBootStrap {
 	public static void start(String[] args) {
 		log.info("Booting Service ..... ..");
 		try {
+			log.info("Starting Reactor Debug Agent ..... ..");
+			ReactorDebugAgent.init();
 			// context = SpringApplication.run(ServiceBootStrap.class, args);
 			SpringApplication.run(ServiceBootStrap.class, args);
 			log.info("Booting Service ..... ...Startup completed!");

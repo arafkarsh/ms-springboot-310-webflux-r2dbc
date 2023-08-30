@@ -90,12 +90,15 @@ public class CountryControllerImpl extends AbstractController {
 		log.info("|"+name()+"|Request to Get Country By Code for > "+_countryCode);
 		return countryReactiveService.findByCountryCode(_countryCode)
 			.log("countryReactiveService.findByCountryCode(code)")
+			.checkpoint("Fetching Countries by Country Code > "+_countryCode)
 			.flatMap(data -> {
 				StandardResponse stdResponse = createSuccessResponse("Data Fetch Success!");
 				stdResponse.setPayload(data);
 				return Mono.just(stdResponse);
 			})
-			.switchIfEmpty(Mono.error(new BusinessServiceException("Data not found for > "+_countryCode)));
+			.checkpoint("Fetched Countries by Country Code > "+_countryCode)
+			.switchIfEmpty(Mono.error(new BusinessServiceException("Data not found for > "+_countryCode)))
+			.checkpoint("Country Data Not Found for  "+_countryCode);
 			// Exception thrown by the RestController will be handled by the Global Exception Handler
 	}
 
@@ -135,7 +138,7 @@ public class CountryControllerImpl extends AbstractController {
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200",
 					description = "List All the Countries",
-					content = {@Content(mediaType = "application/json")}),
+					content = {@Content(mediaType = "text/event-stream")}),
 			@ApiResponse(responseCode = "400",
 					description = "No Country Data available!",
 					content = @Content)
@@ -158,7 +161,7 @@ public class CountryControllerImpl extends AbstractController {
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200",
 			description = "List All the Countries",
-			content = {@Content(mediaType = "application/json")}),
+			content = {@Content(mediaType = "text/event-stream")}),
 		@ApiResponse(responseCode = "400",
 			description = "No Country Data available!",
 			content = @Content)
@@ -168,21 +171,25 @@ public class CountryControllerImpl extends AbstractController {
 		log.info("|"+name()+"|Request to get All Countries ... ");
 		return countryReactiveService.findAll()
 			.log("countryReactiveService.findAll()")
+			.checkpoint("Countries: After fetching all countries")  // Added checkpoint
 			// Delay by 3 seconds for every record to demo SSE - Server Side Events
 			.delayElements(Duration.ofSeconds(3))
 			.flatMap(countryEntity -> {
 				if (Math.random() < 0.2) {  // 20% chance of throwing an exception
 					// Return Error Message
 					return Mono.just(ServerSentEvent.<CountryEntity>builder()
-							.event("error").data(null).comment("Stream error occurred.").build());
+						.event("error").data(null).comment("Stream error occurred.").build())
+						.checkpoint("Countries: Error while streaming data");  // Another checkpoint;
 				}
 				// Return Data
 				return Mono.just(ServerSentEvent.<CountryEntity>builder()
-						.event("data").data(countryEntity).build());
+					.event("data").data(countryEntity).build())
+					.checkpoint("Countries: Streaming data");  // Another checkpoint;
 			})
 			// Return Error Message
 			.switchIfEmpty(Mono.just(ServerSentEvent.<CountryEntity>builder()
-						.event("error").data(null).comment("No countries found!").build()));
+				.event("error").data(null).comment("No countries found!").build())
+				.checkpoint("Countries: Data Not Found!"));  // Another checkpoint);
 	}
 
 	/**
