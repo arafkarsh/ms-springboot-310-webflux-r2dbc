@@ -51,31 +51,25 @@ public class CartItemHandler extends AbstractHandler {
     private CartReactiveService cartReactiveService;
 
     public Mono<ServerResponse> getCart(ServerRequest request) {
-        log.info("Inside Handler - getCart() ");
         String customerId = request.pathVariable("customerId");
-        // UUID cartId = UUID.fromString(request.pathVariable("cardId"));
-        // return ServerResponse.notFound().build()
-        //        .log("Data Not Found: Cart is empty For "+customerId);  // Debug log
-        // return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
-        //         .log("After INTERNAL_SERVER_ERROR");  // Debug log
         return cartReactiveService
-                .findByCustomerId(customerId)
-                .log("Finding Cart for Customer ID = "+customerId)   // Find the Cart by Customer ID
-                .collectList()                                                // convert the Flux<Cart> to Mono<List<Cart>>
-                .flatMap(carts -> {
-                    if (carts.isEmpty()) {
-                        return Mono.error(new DataNotFoundException("Cart not found for customer ID: " + customerId));
-                    }
-                    // Create a StandardResponse object
-                    StandardResponse stdResponse = createSuccessResponse("Data Retrieved!");
-                    stdResponse.setPayload(carts); // Set the payload with carts
+            .findByCustomerId(customerId)
+            .log("Finding Cart for Customer ID = "+customerId)   // Find the Cart by Customer ID
+            .collectList()                                                // convert the Flux<Cart> to Mono<List<Cart>>
+            .flatMap(carts -> {
+                if (carts.isEmpty()) {
+                    return Mono.error(new DataNotFoundException("Cart not found for customer ID: " + customerId));
+                }
+                // Create a StandardResponse object
+                StandardResponse stdResponse = createSuccessResponse("Data Retrieved!");
+                stdResponse.setPayload(carts);                          // Set the payload with carts
 
-                    return ServerResponse.ok()
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .body(fromValue(stdResponse))
-                            .log("Pass 3: Found Data!"); // Set the body with StandardResponse
-                })
-                .onErrorResume(DataNotFoundException.class, Mono::error) // Propagate DNF Exception
-                .onErrorResume(Mono::error);                             // Propagate UNKNOWN Exception
+                return ServerResponse.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(fromValue(stdResponse))
+                    .log("Pass 3: Found Data!");               // Set the body with StandardResponse
+            })
+            .onErrorResume(DataNotFoundException.class, Mono::error)    // Propagate DNF Exception
+            .onErrorResume(Mono::error);                                // Propagate UNKNOWN Exception
     }
 }
