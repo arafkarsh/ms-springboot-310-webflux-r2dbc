@@ -94,7 +94,7 @@ public class CountryControllerImpl extends AbstractController {
 					stdResponse.setPayload(data);
 					return Mono.just(stdResponse);
 				})
-				.switchIfEmpty(Mono.error(new DataNotFoundException("Data not found for > "+_countryCode)));
+				.switchIfEmpty(Mono.error(new BusinessServiceException("Data not found for > "+_countryCode)));
 	}
 
 	/**
@@ -120,8 +120,7 @@ public class CountryControllerImpl extends AbstractController {
 					StandardResponse stdResponse = createSuccessResponse("Data Fetch Success!");
 					stdResponse.setPayload(data);
 					return Mono.just(stdResponse);
-				})
-				.switchIfEmpty(Mono.error(new DataNotFoundException("Data not found for > "+_countryId)));
+				});
 	}
 
 	/**

@@ -97,10 +97,13 @@ public class CountryReactiveServiceImpl implements CountryReactiveService {
     @Override
     public Mono<CountryEntity> findByCountryId(String countryId) {
         return countryRepository.findByCountryId(countryId)
+                .switchIfEmpty(Mono.error(new DataNotFoundException("FAILED to fetch data > "+countryId)));
+               /**
                 .onErrorResume(e -> {
                     log.error("Database ERROR:", e);
                     return Mono.error(new DataNotFoundException("FAILED to fetch data! "+e.getMessage(), e));
                 });
+                */
     }
 
     /**
