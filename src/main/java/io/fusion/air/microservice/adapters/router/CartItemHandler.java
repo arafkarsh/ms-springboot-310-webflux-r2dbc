@@ -15,11 +15,13 @@
  */
 package io.fusion.air.microservice.adapters.router;
 
+import io.fusion.air.microservice.domain.exceptions.DataNotFoundException;
 import io.fusion.air.microservice.domain.models.core.StandardResponse;
 import io.fusion.air.microservice.domain.ports.services.CartReactiveService;
 import io.fusion.air.microservice.server.router.AbstractHandler;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -52,18 +54,28 @@ public class CartItemHandler extends AbstractHandler {
         log.info("Inside Handler - getCart() ");
         String customerId = request.pathVariable("customerId");
         // UUID cartId = UUID.fromString(request.pathVariable("cardId"));
+        // return ServerResponse.notFound().build()
+        //        .log("Data Not Found: Cart is empty For "+customerId);  // Debug log
+        // return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+        //         .log("After INTERNAL_SERVER_ERROR");  // Debug log
         return cartReactiveService
-                .findByCustomerId(customerId)                               // Find the Cart by Customer ID
-                .collectList()                                             // convert the Flux<Cart> to Mono<List<Cart>>
+                .findByCustomerId(customerId)
+                .log("Finding Cart for Customer ID = "+customerId)   // Find the Cart by Customer ID
+                .collectList()                                                // convert the Flux<Cart> to Mono<List<Cart>>
                 .flatMap(carts -> {
+                    if (carts.isEmpty()) {
+                        return Mono.error(new DataNotFoundException("Cart not found for customer ID: " + customerId));
+                    }
                     // Create a StandardResponse object
                     StandardResponse stdResponse = createSuccessResponse("Data Retrieved!");
                     stdResponse.setPayload(carts); // Set the payload with carts
 
                     return ServerResponse.ok()
                             .contentType(MediaType.APPLICATION_JSON)
-                            .body(fromValue(stdResponse)); // Set the body with StandardResponse
+                            .body(fromValue(stdResponse))
+                            .log("Pass 3: Found Data!"); // Set the body with StandardResponse
                 })
-                .switchIfEmpty(ServerResponse.notFound().build());
+                .onErrorResume(DataNotFoundException.class, Mono::error) // Propagate DNF Exception
+                .onErrorResume(Mono::error);                             // Propagate UNKNOWN Exception
     }
 }

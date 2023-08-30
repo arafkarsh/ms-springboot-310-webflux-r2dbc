@@ -17,6 +17,7 @@ package io.fusion.air.microservice.adapters.service;
 
 import io.fusion.air.microservice.adapters.repository.CountryRepository;
 import io.fusion.air.microservice.domain.entities.example.CountryEntity;
+import io.fusion.air.microservice.domain.exceptions.DataNotFoundException;
 import io.fusion.air.microservice.domain.exceptions.DatabaseException;
 import io.fusion.air.microservice.domain.models.example.Country;
 import io.fusion.air.microservice.domain.ports.services.CountryReactiveService;
@@ -65,7 +66,11 @@ public class CountryReactiveServiceImpl implements CountryReactiveService {
 
     @Override
     public Flux<CountryEntity> findAll() {
-        return countryRepository.findAll();
+        return countryRepository.findAll()
+                .onErrorResume(e -> {
+                    log.error("Database ERROR:", e);
+                    return Mono.error(new DataNotFoundException("FAILED to fetch data! "+e.getMessage(), e));
+                });
     }
 
     /**
@@ -79,7 +84,7 @@ public class CountryReactiveServiceImpl implements CountryReactiveService {
         return countryRepository.findByCountryCode(code)
                 .onErrorResume(e -> {
                     log.error("Database ERROR:", e);
-                    return Mono.error(new DatabaseException("Failed to fetch data! "+e.getMessage(), e));
+                    return Mono.error(new DataNotFoundException("FAILED to fetch data! "+e.getMessage(), e));
                 });
     }
 
@@ -91,7 +96,11 @@ public class CountryReactiveServiceImpl implements CountryReactiveService {
      */
     @Override
     public Mono<CountryEntity> findByCountryId(String countryId) {
-        return countryRepository.findByCountryId(countryId);
+        return countryRepository.findByCountryId(countryId)
+                .onErrorResume(e -> {
+                    log.error("Database ERROR:", e);
+                    return Mono.error(new DataNotFoundException("FAILED to fetch data! "+e.getMessage(), e));
+                });
     }
 
     /**

@@ -77,6 +77,7 @@ public class ExceptionHandlerComponent implements ErrorWebExceptionHandler {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
 
+        log.error("Exception Occurred: "+ex.getMessage());
         // Set the content type to application/json
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
         // Get the Request Context
