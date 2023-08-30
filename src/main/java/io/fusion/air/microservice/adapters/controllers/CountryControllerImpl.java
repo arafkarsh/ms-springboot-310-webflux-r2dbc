@@ -88,13 +88,14 @@ public class CountryControllerImpl extends AbstractController {
 	public Mono<StandardResponse> getCountryByCode(@PathVariable("countryCode") String _countryCode)throws Exception {
 		log.info("|"+name()+"|Request to Get Country By Code for > "+_countryCode);
 		return countryReactiveService.findByCountryCode(_countryCode)
-				.log("countryReactiveService.findByCountryCode(code)")
-				.flatMap(data -> {
-					StandardResponse stdResponse = createSuccessResponse("Data Fetch Success!");
-					stdResponse.setPayload(data);
-					return Mono.just(stdResponse);
-				})
-				.switchIfEmpty(Mono.error(new BusinessServiceException("Data not found for > "+_countryCode)));
+			.log("countryReactiveService.findByCountryCode(code)")
+			.flatMap(data -> {
+				StandardResponse stdResponse = createSuccessResponse("Data Fetch Success!");
+				stdResponse.setPayload(data);
+				return Mono.just(stdResponse);
+			})
+			.switchIfEmpty(Mono.error(new BusinessServiceException("Data not found for > "+_countryCode)));
+			// Exception thrown by the RestController will be handled by the Global Exception Handler
 	}
 
 	/**
@@ -115,12 +116,14 @@ public class CountryControllerImpl extends AbstractController {
 	public Mono<StandardResponse> getCountryById(@PathVariable("countryId") String _countryId)throws Exception {
 		log.info("|"+name()+"|Request to Get Country By ID for > "+_countryId);
 		return countryReactiveService.findByCountryId(_countryId)
-				.log("countryReactiveService.findByCountryId(id)")
-				.flatMap(data -> {
-					StandardResponse stdResponse = createSuccessResponse("Data Fetch Success!");
-					stdResponse.setPayload(data);
-					return Mono.just(stdResponse);
-				});
+			.log("countryReactiveService.findByCountryId(id)")
+			.flatMap(data -> {
+				StandardResponse stdResponse = createSuccessResponse("Data Fetch Success!");
+				stdResponse.setPayload(data);
+				return Mono.just(stdResponse);
+			});
+			// Exception thrown by CountryReactiveService will be handled by the Global Exception Handler
+
 	}
 
 	/**

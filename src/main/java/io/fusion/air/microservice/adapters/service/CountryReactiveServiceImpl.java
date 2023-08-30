@@ -67,10 +67,7 @@ public class CountryReactiveServiceImpl implements CountryReactiveService {
     @Override
     public Flux<CountryEntity> findAll() {
         return countryRepository.findAll()
-                .onErrorResume(e -> {
-                    log.error("Database ERROR:", e);
-                    return Mono.error(new DataNotFoundException("FAILED to fetch data! "+e.getMessage(), e));
-                });
+                .switchIfEmpty(Mono.error(new DataNotFoundException("FAILED to fetch data!")));
     }
 
     /**
@@ -82,6 +79,8 @@ public class CountryReactiveServiceImpl implements CountryReactiveService {
     @Override
     public Mono<CountryEntity> findByCountryCode(String code) {
         return countryRepository.findByCountryCode(code)
+                // If the Query is Empty Mono will have no data and will NOT throw an Exception
+                // Following onErrorResume will never be called if the Query is Empty
                 .onErrorResume(e -> {
                     log.error("Database ERROR:", e);
                     return Mono.error(new DataNotFoundException("FAILED to fetch data! "+e.getMessage(), e));
@@ -98,12 +97,6 @@ public class CountryReactiveServiceImpl implements CountryReactiveService {
     public Mono<CountryEntity> findByCountryId(String countryId) {
         return countryRepository.findByCountryId(countryId)
                 .switchIfEmpty(Mono.error(new DataNotFoundException("FAILED to fetch data > "+countryId)));
-               /**
-                .onErrorResume(e -> {
-                    log.error("Database ERROR:", e);
-                    return Mono.error(new DataNotFoundException("FAILED to fetch data! "+e.getMessage(), e));
-                });
-                */
     }
 
     /**
