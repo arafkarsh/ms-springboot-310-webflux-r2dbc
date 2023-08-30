@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -163,19 +164,25 @@ public class CountryControllerImpl extends AbstractController {
 			content = @Content)
 	})
 	@GetMapping(path = "/all/delay", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public Flux<CountryEntity> getAllCountriesWithDelay() throws Exception {
+	public Flux<ServerSentEvent<CountryEntity>> getAllCountriesWithDelay() throws Exception {
 		log.info("|"+name()+"|Request to get All Countries ... ");
 		return countryReactiveService.findAll()
 			.log("countryReactiveService.findAll()")
 			// Delay by 3 seconds for every record to demo SSE - Server Side Events
 			.delayElements(Duration.ofSeconds(3))
 			.flatMap(countryEntity -> {
-				if (Math.random() < 0.05) {  // 5% chance of throwing an exception
-					return Mono.error(new BusinessServiceException("Random error occurred"));
+				if (Math.random() < 0.2) {  // 20% chance of throwing an exception
+					// Return Error Message
+					return Mono.just(ServerSentEvent.<CountryEntity>builder()
+							.event("error").data(null).comment("Stream error occurred.").build());
 				}
-				return Mono.just(countryEntity);
+				// Return Data
+				return Mono.just(ServerSentEvent.<CountryEntity>builder()
+						.event("data").data(countryEntity).build());
 			})
-			.switchIfEmpty(Mono.error(new DataNotFoundException("No countries found!")));
+			// Return Error Message
+			.switchIfEmpty(Mono.just(ServerSentEvent.<CountryEntity>builder()
+						.event("error").data(null).comment("No countries found!").build()));
 	}
 
 	/**
