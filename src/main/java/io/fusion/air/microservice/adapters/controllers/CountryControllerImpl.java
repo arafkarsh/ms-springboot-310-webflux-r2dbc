@@ -123,7 +123,6 @@ public class CountryControllerImpl extends AbstractController {
 				return Mono.just(stdResponse);
 			});
 			// Exception thrown by CountryReactiveService will be handled by the Global Exception Handler
-
 	}
 
 	/**
