@@ -155,21 +155,27 @@ public class CountryControllerImpl extends AbstractController {
 	 */
 	@Operation(summary = "Get All the Countries with a Delay in every Record")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200",
-					description = "List All the Countries",
-					content = {@Content(mediaType = "application/json")}),
-			@ApiResponse(responseCode = "400",
-					description = "No Country Data available!",
-					content = @Content)
+		@ApiResponse(responseCode = "200",
+			description = "List All the Countries",
+			content = {@Content(mediaType = "application/json")}),
+		@ApiResponse(responseCode = "400",
+			description = "No Country Data available!",
+			content = @Content)
 	})
 	@GetMapping(path = "/all/delay", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<CountryEntity> getAllCountriesWithDelay() throws Exception {
 		log.info("|"+name()+"|Request to get All Countries ... ");
 		return countryReactiveService.findAll()
-				.log("countryReactiveService.findAll()")
-				.delayElements(Duration.ofSeconds(3))
-				.switchIfEmpty(Mono.error(new DataNotFoundException("No countries found!")));
-
+			.log("countryReactiveService.findAll()")
+			// Delay by 3 seconds for every record to demo SSE - Server Side Events
+			.delayElements(Duration.ofSeconds(3))
+				.flatMap(countryEntity -> {
+					if (Math.random() < 0.05) {  // 5% chance of throwing an exception
+						return Mono.error(new BusinessServiceException("Random error occurred"));
+					}
+					return Mono.just(countryEntity);
+				})
+			.switchIfEmpty(Mono.error(new DataNotFoundException("No countries found!")));
 	}
 
 	/**

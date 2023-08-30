@@ -55,7 +55,8 @@ public class CartItemHandler extends AbstractHandler {
         return cartReactiveService
             .findByCustomerId(customerId)
             .log("Finding Cart for Customer ID = "+customerId)   // Find the Cart by Customer ID
-            .collectList()                                                // convert the Flux<Cart> to Mono<List<Cart>>
+            .collectList()
+            .log("Converted Flux<Cart> to Mono<List> 1")         // convert the Flux<Cart> to Mono<List<Cart>>
             .flatMap(carts -> {
                 if (carts.isEmpty()) {
                     return Mono.error(new DataNotFoundException("Cart not found for customer ID: " + customerId));

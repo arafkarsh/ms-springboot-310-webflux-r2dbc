@@ -99,7 +99,6 @@ public class ExceptionHandlerComponent implements ErrorWebExceptionHandler {
         } catch (Exception e) {
             return Mono.error(e);
         }
-
     }
 
     /**
