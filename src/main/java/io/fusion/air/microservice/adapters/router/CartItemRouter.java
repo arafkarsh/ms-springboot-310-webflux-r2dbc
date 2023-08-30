@@ -49,28 +49,28 @@ public class CartItemRouter {
 
     @Bean
     @RouterOperations({
-            @RouterOperation(
-                    path = "/cart/customer/{customerId}",
-                    beanClass = CartItemHandler.class,
-                    beanMethod = "getCart",
-                    operation = @Operation(
-                            summary = "Get Cart by Customer ID",
-                            security = { @SecurityRequirement(name = "bearer-key") },
-                            responses = {
-                                    @ApiResponse(
-                                            responseCode = "200",
-                                            description = "Cart retrieved",
-                                            content = {@Content(mediaType = "application/json")}
-                                    ),
-                                    @ApiResponse(
-                                            responseCode = "400",
-                                            description = "Unable to retrieve the Customer Cart!",
-                                            content = @Content
-                                    )
-                            }
+        @RouterOperation(
+            path = "/cart/customer/{customerId}",
+            beanClass = CartItemHandler.class,
+            beanMethod = "getCart",
+            operation = @Operation(
+                summary = "Get Cart by Customer ID",
+                security = { @SecurityRequirement(name = "bearer-key") },
+                responses = {
+                    @ApiResponse(
+                        responseCode = "200",
+                        description = "Cart retrieved",
+                        content = {@Content(mediaType = "application/json")}
+                    ),
+                    @ApiResponse(
+                        responseCode = "400",
+                        description = "Unable to retrieve the Customer Cart!",
+                        content = @Content
                     )
+                }
             )
-            //... similarly for other routes
+        )
+        //... similarly for other routes
     })
     public RouterFunction<ServerResponse> route(CartItemHandler cartItemHandler) {
         log.info("Get All Cart details...  ");
