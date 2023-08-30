@@ -15,13 +15,11 @@
  */
 package io.fusion.air.microservice.adapters.repository;
 
-
 import io.fusion.air.microservice.domain.entities.example.CountryEntity;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
-
 
 /**
  * @author: Araf Karsh Hamid
@@ -45,6 +43,4 @@ public interface CountryRepository extends ReactiveCrudRepository<CountryEntity,
      * @return
      */
     public Mono<CountryEntity> findByCountryId(String countryId);
-
-
 }
