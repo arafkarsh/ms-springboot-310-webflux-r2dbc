@@ -18,7 +18,7 @@ if test "$#" -lt 1; then
 	cd src/docker
 fi
 echo "docker container run --name $SERVICE -d --rm -p $PORT:9090 $ORG/$SERVICE"
-docker container run --name $SERVICE -d --rm -p $PORT:9090 $ORG/$SERVICE
+docker container examples --name $SERVICE -d --rm -p $PORT:9090 $ORG/$SERVICE
 echo "Checkout API: http://localhost:$PORT/api/v1/$API/swagger-ui.html"
 echo "Container id for $SERVICE ="`docker container ls | grep $SERVICE | tr -s " " | cut -d " " -f 1`
 docker container ls | grep $SERVICE | tr -s " " | cut -d " " -f 1 > $SERVICE.cid

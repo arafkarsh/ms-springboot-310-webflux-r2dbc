@@ -15,4 +15,4 @@ if test "$#" -lt 1; then
 	cd src/docker
 fi
 echo "docker container run -it $ORG/$SERVICE bash"
-docker container run -it $ORG/$SERVICE bash
+docker container examples -it $ORG/$SERVICE bash

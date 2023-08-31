@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.fusion.air</groupId>
 	<artifactId>ms-webflux-service</artifactId>
-	<version>0.7.1</version>
+	<version>0.7.2</version>
 	<packaging>jar</packaging>
 	<name>msWebFluxService</name>
 	<description>Microservice WebFlux Template</description>
@@ -102,6 +102,14 @@
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-tools</artifactId>
 			<version>3.5.9</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/io.projectreactor.tools/blockhound -->
+		<dependency>
+			<groupId>io.projectreactor.tools</groupId>
+			<artifactId>blockhound</artifactId>
+			<version>1.0.8.RELEASE</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>

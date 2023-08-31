@@ -15,16 +15,21 @@
  */
 package io.fusion.air.microservice;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.fusion.air.microservice.server.config.ServiceConfiguration;
 import io.fusion.air.microservice.server.controllers.HealthController;
-
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.ExternalDocumentation;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.slf4j.Logger;
-
-// Spring Framework
 import org.springdoc.core.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,18 +37,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-// Open API Imports
-import io.swagger.v3.oas.models.ExternalDocumentation;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.security.SecurityScheme;
-import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.web.reactive.config.EnableWebFlux;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,13 +46,13 @@ import java.util.List;
 import static java.lang.invoke.MethodHandles.lookup;
 import static org.slf4j.LoggerFactory.getLogger;
 
-// Cache
-import org.springframework.web.reactive.config.EnableWebFlux;
 import reactor.tools.agent.ReactorDebugAgent;
+// Error: java: package reactor.blockhound does not exist
+// import reactor.blockhound.BlockHound;
 
 
 /**
- * Micro Service - Spring Boot WebFlux Reactive Application
+ * MicroService - Spring Boot WebFlux Reactive Application
  * API URL : http://localhost:9092/service/api/v1/swagger-ui.html
  *
  * @author arafkarsh
@@ -103,6 +97,16 @@ public class ServiceBootStrap {
 	}
 
 	/**
+	 // Error: java: package reactor.blockhound does not exist
+	static {
+		// BlockHound.install();
+		BlockHound.builder()
+			.allowBlockingCallsInside("java.util.UUID", "randomUUID")
+			.install();
+	}
+	*/
+
+	/**
 	 * Start the Server
 	 * @param args
 	 */
@@ -111,7 +115,7 @@ public class ServiceBootStrap {
 		try {
 			log.info("Starting Reactor Debug Agent ..... ..");
 			ReactorDebugAgent.init();
-			// context = SpringApplication.run(ServiceBootStrap.class, args);
+			// context = SpringApplication.examples(ServiceBootStrap.class, args);
 			SpringApplication.run(ServiceBootStrap.class, args);
 			log.info("Booting Service ..... ...Startup completed!");
 		} catch (Exception e) {
