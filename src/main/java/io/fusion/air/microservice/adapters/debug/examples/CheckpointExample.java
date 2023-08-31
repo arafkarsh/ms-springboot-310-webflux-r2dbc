@@ -27,10 +27,14 @@ import java.time.Duration;
  */
 public class CheckpointExample {
 
+    private static boolean checkPointEnabled = true;
+
     public static void main(String[] args) throws InterruptedException {
         ReactorDebugAgent.init();
 
-        checkPointExample();
+        checkPointEnabled = false;
+        // checkPointExample();
+        checkPointExample2();
 
         System.out.println("Waiting for 10 seconds...");
         Thread.sleep(15000);
@@ -58,5 +62,26 @@ public class CheckpointExample {
             })
             .checkpoint("After Error Handling")
             .subscribe();
+    }
+
+    public static void checkPointExample2() {
+        System.out.println("Checkpoint Example...");
+
+        Flux.just(1, 2, 3, 4, 5)
+                .transform(flux -> checkPointEnabled ? flux.checkpoint("Initial Data Emission") : flux)
+                .delayElements(Duration.ofMillis(1000))
+                .map(i -> {
+                    if (i == 3) throw new RuntimeException("An error occurred!");
+                    int x = i * 2;
+                    System.out.println("Processing: " + i + " * 2 = " + x);
+                    return x;
+                })
+                .transform(flux -> checkPointEnabled ? flux.checkpoint("After Data Transformation") : flux)
+                .onErrorResume(e -> {
+                    e.printStackTrace();
+                    return Flux.just(-1);
+                })
+                .transform(flux -> checkPointEnabled ? flux.checkpoint("After Error Handling") : flux)
+                .subscribe();
     }
 }
