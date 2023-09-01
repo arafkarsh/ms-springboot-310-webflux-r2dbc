@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.fusion.air.microservice.adapters.debug.examples;
+package io.fusion.air.microservice.adapters.examples.debug;
 
 import reactor.core.publisher.Flux;
 
